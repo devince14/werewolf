@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>狼人杀</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        .belief-bar {
+            transition: width 0.3s ease;
+            height: 20px;
+        }
+        .player-name {
+            position: absolute;
+            left: 5px;
+            line-height: 20px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            z-index: 1;
+            font-size: 0.85rem;
+        }
+        .belief-value {
+            position: absolute;
+            right: 5px;
+            line-height: 20px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            z-index: 1;
+            font-size: 0.85rem;
+        }
+        .role-indicator {
+            position: absolute;
+            right: -60px;
+            line-height: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        .game-log {
+            height: calc(100vh - 300px);
+            min-height: 200px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    {% raw %}
+    <div id="app" class="container mx-auto px-2 py-4">
+        <!-- 开始游戏按钮 -->
+        <div v-if="!gameStarted" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+            <h1 class="text-2xl font-bold mb-4 text-center">狼人杀 AI对战</h1>
+            <button @click="showSetupModal = true"
+                    class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">
+            开始新游戏
+            </button>
+        </div>
+
+        <!-- 游戏界面 -->
+        <div v-else>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
+                <!-- 左侧：游戏信息 -->
+                <div class="md:col-span-2 bg-white rounded-lg shadow-md p-2">
+                    <h2 class="text-lg font-bold mb-2">游戏信息</h2>
+                
+                    <div class="space-y-1 text-sm">
+                    <!-- 当前阶段、天数 -->
+                    <p>当前阶段:
+                        <span class="font-bold">{{ currentPhase === 'night' ? '夜晚' : '白天' }}</span>
+                    </p>
+                    <p>天数:
+                        <span class="font-bold">{{ day }}</span>
+                    </p>
+                
+                    <!-- 主持人滚动消息 -->
+                    <div v-if="hostMessage" class="mt-2 p-2 bg-purple-100 rounded-lg">
+                        <p class="font-bold text-purple-800">{{ hostMessage }}</p>
+                    </div>
+                
+                    <!-- 进行下一步按钮 -->
+                    <div v-if="nextStep" class="mt-2">
+                        <button @click="proceedNextStep"
+                                class="w-full bg-green-600 text-white py-1 px-2 rounded-md hover:bg-green-700 text-sm">
+                        {{ nextStep }}
+                        </button>
+                    </div>
+                
+                    <!-- 结束当前游戏按钮 -->
+                    <div v-if="gameStarted && !showResult" class="mt-4">
+                        <button @click="endGame"
+                                class="w-full bg-red-600 text-white py-1 px-2 rounded-md hover:bg-red-700 text-sm">
+                        结束当前游戏
+                        </button>
+                    </div>
+                    </div> <!-- space-y-1 -->
+                </div> <!-- md:col-span-2 -->
+                
+
+                <!-- 中间：游戏日志 -->
+                <div class="md:col-span-4 bg-white rounded-lg shadow-md p-2">
+                    <h2 class="text-lg font-bold mb-2">游戏日志</h2>
+                    <div class="game-log overflow-y-auto space-y-1" ref="logContainer">
+                        <div v-for="(log, index) in gameLogs" :key="index" 
+                             class="p-1 rounded text-sm" 
+                             :class="getLogClass(log)">
+                            <div class="flex items-center">
+                                <span v-if="log.phase" class="font-bold mr-1">【{{ getPhaseText(log.phase) }}】</span>
+                                <span>{{ log.message }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：信念值条形图 -->
+                <div class="md:col-span-6 bg-white rounded-lg shadow-md p-2">
+                    <h2 class="text-lg font-bold mb-2">狼人概率</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div v-for="(player, pid) in players" :key="pid" class="belief-section">
+                            <div class="text-center font-bold mb-1 text-sm" :class="{
+                                'text-red-600': player.role === 'WOLF',
+                                'text-blue-600': player.role === 'SEER',
+                                'text-green-600': player.role === 'VILLAGER'
+                            }">
+                                {{ player.name }} ({{ getRoleName(player.role) }})
+                            </div>
+                            <div v-for="(target, tid) in players" :key="tid" v-if="tid != pid" 
+                                 class="relative mb-1 bg-gray-200 rounded overflow-hidden">
+                                <div class="player-name">{{ target.name }}</div>
+                                <div class="belief-bar bg-red-500" 
+                                     :style="{ width: (player.beliefs?.p_wolf?.[tid] * 100 || 0) + '%' }">
+                                </div>
+                                <div class="belief-value">{{ formatBeliefValue(player.beliefs?.p_wolf?.[tid]) }}</div>
+                                <div class="role-indicator" :class="{
+                                    'text-red-600': target.role === 'WOLF',
+                                    'text-blue-600': target.role === 'SEER',
+                                    'text-green-600': target.role === 'VILLAGER'
+                                }">{{ getRoleName(target.role) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果弹窗 -->
+        <div v-if="showResult"class="fixed inset-0 bg-black flex items-center justify-center z-50">
+            <div class="bg-white p-6 rounded-lg max-w-md w-full">
+                <h2 class="text-xl font-bold mb-4">游戏结束</h2>
+                <p class="mb-4">{{ resultMessage }}</p>
+                <button @click="resetGame" class="mt-4 w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">
+                    开始新游戏
+                </button>
+            </div>
+        </div>
+        <!-- 房间设置弹窗 -->
+    <div v-if="showSetupModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        <div class="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 overflow-y-auto max-h-[90vh]">
+        <h2 class="text-xl font-bold mb-4">房间设置</h2>
+    
+        <!-- 玩家人数 -->
+        <label class="block text-sm font-semibold">玩家人数</label>
+        <input type="number" v-model.number="setup.numPlayers"
+                min="4" max="12"
+                class="w-full border rounded px-2 py-1 mb-2"/>
+    
+        <!-- 狼人数 -->
+        <label class="block text-sm font-semibold">狼人数量</label>
+        <input type="number" v-model.number="setup.numWolves"
+                :max="setup.numPlayers-1" min="1"
+                class="w-full border rounded px-2 py-1 mb-2"/>
+        <!-- 预言家数 -->
+        <label class="block text-sm font-semibold">预言家数量</label>
+        <input type="number" v-model.number="setup.numSeers"
+                :max="setup.numPlayers-1" min="1"
+                class="w-full border rounded px-2 py-1 mb-2"/>    
+        <!-- 角色分配 -->
+        <label class="block text-sm font-semibold">角色分配</label>
+        <select v-model="setup.assignMode"
+                class="w-full border rounded px-2 py-1 mb-2">
+            <option value="random">系统随机</option>
+            <!-- <option value="manual">手动指定</option> -->
+        </select>
+    
+        <!-- 手动角色下拉
+        <div v-if="setup.assignMode==='manual'" class="space-y-1 mb-2">
+            <div v-for="i in setup.numPlayers" :key="'role'+i" class="flex items-center space-x-2">
+            <span class="w-16 text-sm">{{ '玩家' + i }}</span>
+
+
+            <select v-model.number="setup.roles[i-1]"
+                    class="flex-1 border rounded px-1 py-0.5">
+                <option :value="0">狼人</option>
+                <option :value="1">村民</option>
+                <option :value="2">预言家</option>
+            </select>
+            </div>
+        </div> -->
+    
+        <!-- 策略 -->
+        <label class="block text-sm font-semibold">AI 策略</label>
+        <select v-model="setup.strategy"
+                class="w-full border rounded px-2 py-1 mb-4">
+            <option value="belief">信念 (Belief)</option>
+            <option value="random">随机 (Random)</option>
+        </select>
+    
+        <!-- 底部按钮 -->
+        <div class="flex justify-end space-x-2">
+            <button @click="showSetupModal=false"
+                    class="px-4 py-1 rounded border">取消</button>
+            <button @click="confirmStartGame"
+                    class="px-4 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700">创建并开始
+            </button>
+        </div>
+    </div>
+    
+        </div>
+    </div>
+    {% endraw %}
+
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    socket: null,
+                    gameStarted: false,
+                    players: [],
+                    currentPhase: 'night',   // 默认夜晚
+                    day: 1,                  // 默认第 1 天
+                    gameLogs: [],
+                    showResult: false,
+                    resultMessage: '',
+                    hostMessage: '',
+                    nextStep: '',
+                    showSetupModal: false,          // 弹窗显隐
+                    setup: {
+                        numPlayers: 6,
+                        numWolves : 2,
+                        numSeers : 1,
+                        assignMode: 'random',
+                        strategy  : 'belief',
+                        roles     : []        // 当 assignMode == 'manual' 时填充
+                    }
+                }
+            },
+            watch: {
+                'setup.numPlayers'(n) {
+                // 自动填充 / 截断 roles 数组
+                this.setup.roles.length = n
+                this.setup.roles.fill(1)
+                }
+            },
+            methods: {
+                startGame() {
+                    if (!this.socket) {
+                        this.socket = io()
+                        this.setupSocketListeners()
+                    }
+                    this.socket.emit('start_game')
+                },
+                confirmStartGame() {
+                    // 若是手动分配，确保 roles 数组长度正确
+                    if (this.setup.assignMode === 'manual' &&
+                        this.setup.roles.length !== this.setup.numPlayers) {
+                        this.setup.roles = Array(this.setup.numPlayers).fill(1)   // 默认村民
+                    }
+
+                    // socket 只建一次
+                    if (!this.socket) {
+                        this.socket = io()
+                        this.setupSocketListeners()
+
+                        // ❶ 等连上以后再发 start_game
+                        this.socket.on('connect', () => {
+                            this.socket.emit('start_game', payload)
+                        })
+                        } else {
+                        // ❷ 已经连上过，直接 emit
+                        this.socket.emit('start_game', payload)
+                        }
+
+                    /* ---------- 关键：把 camelCase 转成 snake_case ---------- */
+                    const payload = {
+                        num_players : this.setup.numPlayers,
+                        num_wolves  : this.setup.numWolves,
+                        num_Seers   : this.setup.numSeers,
+                        assign_mode : this.setup.assignMode,
+                        roles       : this.setup.roles,
+                        strategy    : this.setup.strategy
+                    }
+
+                    this.socket.emit('start_game', payload)
+
+                    this.showSetupModal = false
+                    console.log('[Vue] 已发 start_game ->', payload)
+                    },
+
+                endGame() {
+                    if (this.socket) {
+                        this.socket.emit('end_game')
+                    }
+                    },
+
+                updatePhaseAndDay({ phase, message }) {
+                    // 1) 更新 currentPhase
+                    if (phase) {
+                        const nightSet = ['night', 'wolf_turn', 'seer_turn', 'night_end'];
+                        this.currentPhase = nightSet.includes(phase) ? 'night' : 'day';
+                    }
+
+                    // 2) 若是 day_start，解析天数
+                    if (phase === 'day_start') {
+                        const m = message.match(/第\s+(\d+)\s+天/);   // 支持 “第 X 天开始”
+                        if (m) this.day = parseInt(m[1]);
+                    }
+                    },
+
+                setupSocketListeners() {
+                    this.socket.on('connect', () => {
+                        console.log('Connected to server')
+                    })
+
+                    this.socket.on('game_started', (data) => {
+                        this.gameStarted = true
+                        this.currentPhase = 'night'   // 游戏一开始是夜晚
+                        this.day = 1
+                        this.players = data.players.map(p => ({
+                            ...p, 
+                            alive: true,
+                            beliefs: {
+                                p_wolf: new Array(data.players.length).fill(0),
+                                p_seer: new Array(data.players.length).fill(0)
+                            }
+                        }))
+                        this.addLog({
+                            type: 'system',
+                            message: '游戏开始！'
+                        })
+                    })
+
+                    this.socket.on('update_beliefs', (data) => {
+                        for (let pid in data.beliefs) {
+                            if (this.players[pid]) {
+                                this.players[pid].beliefs = data.beliefs[pid]
+                            }
+                        }
+                    })
+
+                    this.socket.on('host_message', (data) => {
+                        this.hostMessage = data.message
+                        this.addLog({
+                            type: 'host',
+                            message: data.message,
+                            phase: data.phase
+                        })
+                        this.updatePhaseAndDay(data)       // ← 新增
+                    })
+
+                    this.socket.on('wait_next', (data) => {
+                        this.nextStep = data.next_step
+                    })
+
+                    this.socket.on('game_over', (data) => {
+                        this.showResult = true
+                        this.resultMessage = data.winner === 'WOLF' ? '狼人获胜！' : '好人获胜！'
+                        for (let pid in data.roles) {
+                            this.players[pid].role = data.roles[pid]
+                        }
+                        this.nextStep = ''
+                    })
+                },
+                formatBeliefValue(value) {
+                    if (value === undefined || value === null) return '0.00'
+                    return value.toFixed(2)
+                },
+                proceedNextStep() {
+                    this.socket.emit('next_step')
+                    this.nextStep = ''
+                },
+                addLog(log) {
+                    this.gameLogs.push(log)
+                    this.$nextTick(() => {
+                        const container = this.$refs.logContainer
+                        container.scrollTop = container.scrollHeight
+                    })
+                },
+                getPhaseText(phase) {
+                    const phaseTexts = {
+                        'night_start': '天黑',
+                        'wolf_turn': '狼人行动',
+                        'seer_turn': '预言家行动',
+                        'night_end': '天亮',
+                        'talk': '发言',
+                        'talk_seer_claim': '身份声明',
+                        'legacy': '遗言',
+                        'vote': '投票',
+                        'death_announce': '死亡公布',
+                        'vote_result': '投票结果'
+                    }
+                    return phaseTexts[phase] || phase
+                },
+                getLogClass(log) {
+                    const classes = {
+                        system: 'bg-blue-100',
+                        night_start: 'bg-gray-800 text-white',
+                        wolf_turn: 'bg-red-100',
+                        seer_turn: 'bg-blue-100',
+                        night_end: 'bg-yellow-100',
+                        talk: 'bg-green-100',
+                        talk_seer_claim: 'bg-blue-200 font-bold',
+                        legacy: 'bg-purple-300 italic',
+                        vote: 'bg-purple-100',
+                        death_announce: 'bg-red-200',
+                        vote_result: 'bg-purple-200',
+                        host: 'bg-purple-100 font-bold'
+                    }
+                    return classes[log.type] || classes[log.phase] || 'bg-gray-100'
+                },
+                getRoleName(role) {
+                    const roleNames = {
+                        'WOLF': '狼人',
+                        'VILLAGER': '村民',
+                        'SEER': '预言家'
+                    }
+                    return roleNames[role] || role
+                },
+                resetGame() {
+                    this.gameStarted = false
+                    this.showResult = false
+                    this.players = []
+                    this.gameLogs = []
+                    this.hostMessage = ''
+                    this.nextStep = ''
+                    if (this.socket) {
+                        this.socket.disconnect()
+                        this.socket = null
+                    }
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html> 

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>狼人杀</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        .belief-bar {
+            transition: width 0.3s ease;
+            height: 20px;
+        }
+        .player-name {
+            position: absolute;
+            left: 5px;
+            line-height: 20px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            z-index: 1;
+            font-size: 0.85rem;
+        }
+        .belief-value {
+            position: absolute;
+            right: 5px;
+            line-height: 20px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            z-index: 1;
+            font-size: 0.85rem;
+        }
+        .role-indicator {
+            position: absolute;
+            right: -60px;
+            line-height: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        .game-log {
+            height: calc(100vh - 300px);
+            min-height: 200px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    {% raw %}
+    <div id="app" class="container mx-auto px-2 py-4">
+        <!-- 开始游戏按钮 -->
+        <div v-if="!gameStarted" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+            <h1 class="text-2xl font-bold mb-4 text-center">狼人杀 AI对战</h1>
+            <button @click="startGame" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">
+                开始新游戏
+            </button>
+        </div>
+
+        <!-- 游戏界面 -->
+        <div v-else>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
+                <!-- 左侧：游戏信息 -->
+                <div class="md:col-span-2 bg-white rounded-lg shadow-md p-2">
+                    <h2 class="text-lg font-bold mb-2">游戏信息</h2>
+                    <div class="space-y-1 text-sm">
+                        <p>当前阶段: <span class="font-bold">{{ currentPhase === 'night' ? '夜晚' : '白天' }}</span></p>
+                        <p>天数: <span class="font-bold">{{ day }}</span></p>
+                        <div v-if="hostMessage" class="mt-2 p-2 bg-purple-100 rounded-lg">
+                            <p class="font-bold text-purple-800">{{ hostMessage }}</p>
+                        </div>
+                        <div v-if="nextStep" class="mt-2">
+                            <button @click="proceedNextStep" 
+                                    class="w-full bg-green-600 text-white py-1 px-2 rounded-md hover:bg-green-700 text-sm">
+                                {{ nextStep }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 中间：游戏日志 -->
+                <div class="md:col-span-4 bg-white rounded-lg shadow-md p-2">
+                    <h2 class="text-lg font-bold mb-2">游戏日志</h2>
+                    <div class="game-log overflow-y-auto space-y-1" ref="logContainer">
+                        <div v-for="(log, index) in gameLogs" :key="index" 
+                             class="p-1 rounded text-sm" 
+                             :class="getLogClass(log)">
+                            <div class="flex items-center">
+                                <span v-if="log.phase" class="font-bold mr-1">【{{ getPhaseText(log.phase) }}】</span>
+                                <span>{{ log.message }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：信念值条形图 -->
+                <div class="md:col-span-6 bg-white rounded-lg shadow-md p-2">
+                    <h2 class="text-lg font-bold mb-2">狼人概率</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div v-for="(player, pid) in players" :key="pid" class="belief-section">
+                            <div class="text-center font-bold mb-1 text-sm" :class="{
+                                'text-red-600': player.role === 'WOLF',
+                                'text-blue-600': player.role === 'SEER',
+                                'text-green-600': player.role === 'VILLAGER'
+                            }">
+                                {{ player.name }} ({{ getRoleName(player.role) }})
+                            </div>
+                            <div v-for="(target, tid) in players" :key="tid" v-if="tid != pid" 
+                                 class="relative mb-1 bg-gray-200 rounded overflow-hidden">
+                                <div class="player-name">{{ target.name }}</div>
+                                <div class="belief-bar bg-red-500" 
+                                     :style="{ width: (player.beliefs?.p_wolf?.[tid] * 100 || 0) + '%' }">
+                                </div>
+                                <div class="belief-value">{{ formatBeliefValue(player.beliefs?.p_wolf?.[tid]) }}</div>
+                                <div class="role-indicator" :class="{
+                                    'text-red-600': target.role === 'WOLF',
+                                    'text-blue-600': target.role === 'SEER',
+                                    'text-green-600': target.role === 'VILLAGER'
+                                }">{{ getRoleName(target.role) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果弹窗 -->
+        <div v-if="showResult" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div class="bg-white p-6 rounded-lg max-w-md w-full">
+                <h2 class="text-xl font-bold mb-4">游戏结束</h2>
+                <p class="mb-4">{{ resultMessage }}</p>
+                <button @click="resetGame" class="mt-4 w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">
+                    开始新游戏
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endraw %}
+
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    socket: null,
+                    gameStarted: false,
+                    players: [],
+                    currentPhase: '',
+                    day: 0,
+                    gameLogs: [],
+                    showResult: false,
+                    resultMessage: '',
+                    hostMessage: '',
+                    nextStep: ''
+                }
+            },
+            methods: {
+                startGame() {
+                    if (!this.socket) {
+                        this.socket = io()
+                        this.setupSocketListeners()
+                    }
+                    this.socket.emit('start_game')
+                },
+                setupSocketListeners() {
+                    this.socket.on('connect', () => {
+                        console.log('Connected to server')
+                    })
+
+                    this.socket.on('game_started', (data) => {
+                        this.gameStarted = true
+                        this.players = data.players.map(p => ({
+                            ...p, 
+                            alive: true,
+                            beliefs: {
+                                p_wolf: new Array(data.players.length).fill(0),
+                                p_seer: new Array(data.players.length).fill(0)
+                            }
+                        }))
+                        this.addLog({
+                            type: 'system',
+                            message: '游戏开始！'
+                        })
+                    })
+
+                    this.socket.on('update_beliefs', (data) => {
+                        for (let pid in data.beliefs) {
+                            if (this.players[pid]) {
+                                this.players[pid].beliefs = data.beliefs[pid]
+                            }
+                        }
+                    })
+
+                    this.socket.on('host_message', (data) => {
+                        this.hostMessage = data.message
+                        this.addLog({
+                            type: 'host',
+                            message: data.message,
+                            phase: data.phase
+                        })
+                    })
+
+                    this.socket.on('wait_next', (data) => {
+                        this.nextStep = data.next_step
+                    })
+
+                    this.socket.on('game_over', (data) => {
+                        this.showResult = true
+                        this.resultMessage = data.winner === 'WOLF' ? '狼人获胜！' : '好人获胜！'
+                        for (let pid in data.roles) {
+                            this.players[pid].role = data.roles[pid]
+                        }
+                        this.nextStep = ''
+                    })
+                },
+                formatBeliefValue(value) {
+                    if (value === undefined || value === null) return '0.00'
+                    return value.toFixed(2)
+                },
+                proceedNextStep() {
+                    this.socket.emit('next_step')
+                    this.nextStep = ''
+                },
+                addLog(log) {
+                    this.gameLogs.push(log)
+                    this.$nextTick(() => {
+                        const container = this.$refs.logContainer
+                        container.scrollTop = container.scrollHeight
+                    })
+                },
+                getPhaseText(phase) {
+                    const phaseTexts = {
+                        'night_start': '天黑',
+                        'wolf_turn': '狼人行动',
+                        'seer_turn': '预言家行动',
+                        'night_end': '天亮',
+                        'talk': '发言',
+                        'talk_seer_claim': '身份声明',
+                        'legacy': '遗言',
+                        'vote': '投票',
+                        'death_announce': '死亡公布',
+                        'vote_result': '投票结果'
+                    }
+                    return phaseTexts[phase] || phase
+                },
+                getLogClass(log) {
+                    const classes = {
+                        system: 'bg-blue-100',
+                        night_start: 'bg-gray-800 text-white',
+                        wolf_turn: 'bg-red-100',
+                        seer_turn: 'bg-blue-100',
+                        night_end: 'bg-yellow-100',
+                        talk: 'bg-green-100',
+                        talk_seer_claim: 'bg-blue-200 font-bold',
+                        legacy: 'bg-purple-300 italic',
+                        vote: 'bg-purple-100',
+                        death_announce: 'bg-red-200',
+                        vote_result: 'bg-purple-200',
+                        host: 'bg-purple-100 font-bold'
+                    }
+                    return classes[log.type] || classes[log.phase] || 'bg-gray-100'
+                },
+                getRoleName(role) {
+                    const roleNames = {
+                        'WOLF': '狼人',
+                        'VILLAGER': '村民',
+                        'SEER': '预言家'
+                    }
+                    return roleNames[role] || role
+                },
+                resetGame() {
+                    this.gameStarted = false
+                    this.showResult = false
+                    this.players = []
+                    this.gameLogs = []
+                    this.hostMessage = ''
+                    this.nextStep = ''
+                    if (this.socket) {
+                        this.socket.disconnect()
+                        this.socket = null
+                    }
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html> 
