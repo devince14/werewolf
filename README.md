@@ -38,6 +38,27 @@ python app.py
 
 The app will start on `http://localhost:5000/`.
 
+## Human vs AI Game
+
+The web interface also supports playing against the AI.  When starting a game
+you can pass the option `game_mode="human"` so one player is controlled by a
+person while all others remain AI agents.  The specific seat the human controls
+is chosen via `human_player_id` (player indices start at 0).  These parameters
+are part of the payload that the client sends with the `start_game` Socket.IO
+event.
+
+To try it out:
+
+1. Launch the server and open the site as shown above.
+2. Click **人机对战** on the landing page to open the setup dialog.
+3. Configure the number of players and select which position you will play via
+   the **人类玩家位置** dropdown.
+4. Press **创建并开始** to begin.  Whenever it is the human player's turn the
+   page will display a panel to choose night actions, make a statement or vote.
+
+The rest of the flow is identical to AI vs AI games but the interface will wait
+for your choices whenever the human controlled slot must act.
+
 ## Python & Requirements
 
 The project requires **Python 3.10+**.  The main packages used by the web app are listed in `webapp/requirements.txt`:
