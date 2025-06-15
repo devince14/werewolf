@@ -1,0 +1,6 @@
+flask==3.0.0
+flask-socketio==5.3.6
+numpy==1.24.3
+pettingzoo==1.24.1
+gymnasium==0.29.1
+python-dotenv==1.0.0 
