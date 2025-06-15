@@ -41,6 +41,9 @@
             height: calc(100vh - 300px);
             min-height: 200px;
         }
+        .masked-role {
+            filter: blur(4px);
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -119,8 +122,8 @@
 
                 <!-- 右侧：信念值条形图或玩家列表 -->
                 <div class="md:col-span-6 bg-white rounded-lg shadow-md p-2">
-                    <!-- AI对战模式：显示信念值 -->
-                    <div v-if="gameMode === 'ai'">
+                    <!-- AI对战模式或上帝视角：显示信念值 -->
+                    <div v-if="gameMode === 'ai' || (gameMode === 'human' && godView)">
                         <h2 class="text-lg font-bold mb-2">狼人概率</h2>
                         <div class="grid grid-cols-2 gap-4">
                             <div v-for="(player, pid) in players" :key="pid" class="belief-section">
@@ -148,11 +151,17 @@
                         </div>
                     </div>
                     
-                    <!-- 人机对战模式：只显示玩家状态 -->
+                    <!-- 人机对战模式：只显示玩家状态，支持上帝视角 -->
                     <div v-else>
-                        <h2 class="text-lg font-bold mb-2">玩家状态</h2>
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-lg font-bold">玩家状态</h2>
+                            <button v-if="gameMode === 'human'" @click="toggleGodView"
+                                    class="text-sm text-blue-600 hover:underline">
+                                {{ godView ? '退出上帝视角' : '上帝视角' }}
+                            </button>
+                        </div>
                         <div class="space-y-2">
-                            <div v-for="(player, pid) in players" :key="pid" 
+                            <div v-for="(player, pid) in players" :key="pid"
                                  class="flex items-center justify-between p-2 bg-gray-100 rounded">
                                 <div class="flex items-center space-x-2">
                                     <span class="font-medium">{{ player.name }}</span>
@@ -165,7 +174,7 @@
                                           }">
                                         {{ getRoleName(player.role) }}
                                     </span>
-                                    <span v-else class="text-sm px-2 py-1 bg-gray-200 text-gray-600 rounded">
+                                    <span v-else class="text-sm px-2 py-1 bg-gray-200 text-gray-600 rounded masked-role">
                                         身份未知
                                     </span>
                                 </div>
@@ -488,6 +497,8 @@
                     selectedTalkType: null,         // 选中的发言类型
                     selectedTarget: null,           // 选中的目标
                     selectedCheckResult: null,      // 选中的查验结果
+                    godView: false,               // 是否处于上帝视角
+                    humanPlayerId: null,          // 人类玩家ID
                     setup: {
                         numPlayers: 6,
                         numWolves : 2,
@@ -581,6 +592,16 @@
                         this.socket.emit('end_game')
                     }
                 },
+
+                toggleGodView() {
+                    if (this.gameMode !== 'human') return
+                    this.godView = !this.godView
+                    for (let p of this.players) {
+                        if (p.id !== this.humanPlayerId) {
+                            p.role = this.godView ? p.actualRole : 'UNKNOWN'
+                        }
+                    }
+                },
                 
                 // 人类玩家操作相关方法
                 selectTalkType(type) {
@@ -647,14 +668,18 @@
                         this.currentPhase = 'night'   // 游戏一开始是夜晚
                         this.day = 1
                         this.gameMode = data.game_mode || 'ai'  // 设置游戏模式
+                        this.humanPlayerId = data.human_player_id
                         this.players = data.players.map(p => ({
-                            ...p, 
+                            ...p,
+                            actualRole: p.role,
+                            role: (this.gameMode === 'human' && p.id !== this.humanPlayerId) ? 'UNKNOWN' : p.role,
                             alive: true,
                             beliefs: {
                                 p_wolf: new Array(data.players.length).fill(0),
                                 p_seer: new Array(data.players.length).fill(0)
                             }
                         }))
+                        this.godView = false
                         
                         // 根据游戏模式显示不同的开始消息
                         if (this.gameMode === 'human') {
@@ -711,6 +736,7 @@
                         this.showResult = true
                         this.resultMessage = data.winner === '狼人' ? '狼人获胜！' : data.winner === '好人' ? '好人获胜！' : '游戏未完成'
                         for (let pid in data.roles) {
+                            this.players[pid].actualRole = data.roles[pid]
                             this.players[pid].role = data.roles[pid]
                         }
                         this.nextStep = ''
@@ -793,6 +819,8 @@
                     this.gameLogs = []
                     this.hostMessage = ''
                     this.nextStep = ''
+                    this.godView = false
+                    this.humanPlayerId = null
                     if (this.socket) {
                         this.socket.disconnect()
                         this.socket = null
