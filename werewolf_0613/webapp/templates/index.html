@@ -46,13 +46,19 @@
 <body class="bg-gray-100">
     {% raw %}
     <div id="app" class="container mx-auto px-2 py-4">
-        <!-- 开始游戏按钮 -->
-        <div v-if="!gameStarted" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-            <h1 class="text-2xl font-bold mb-4 text-center">狼人杀 AI对战</h1>
-            <button @click="showSetupModal = true"
-                    class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">
-            开始新游戏
-            </button>
+        <!-- 游戏模式选择 -->
+        <div v-if="!gameStarted && !showSetupModal" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+            <h1 class="text-2xl font-bold mb-4 text-center">狼人杀游戏</h1>
+            <div class="space-y-3">
+                <button @click="startAIGame"
+                        class="w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700">
+                    AI自动对战
+                </button>
+                <button @click="startHumanAIGame"
+                        class="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700">
+                    人机对战
+                </button>
+            </div>
         </div>
 
         <!-- 游戏界面 -->
@@ -110,31 +116,70 @@
                     </div>
                 </div>
 
-                <!-- 右侧：信念值条形图 -->
+                <!-- 右侧：信念值条形图或玩家列表 -->
                 <div class="md:col-span-6 bg-white rounded-lg shadow-md p-2">
-                    <h2 class="text-lg font-bold mb-2">狼人概率</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div v-for="(player, pid) in players" :key="pid" class="belief-section">
-                            <div class="text-center font-bold mb-1 text-sm" :class="{
-                                'text-red-600': player.role === 'WOLF',
-                                'text-blue-600': player.role === 'SEER',
-                                'text-green-600': player.role === 'VILLAGER'
-                            }">
-                                {{ player.name }} ({{ getRoleName(player.role) }})
-                            </div>
-                            <div v-for="(target, tid) in players" :key="tid" v-if="tid != pid" 
-                                 class="relative mb-1 bg-gray-200 rounded overflow-hidden">
-                                <div class="player-name">{{ target.name }}</div>
-                                <div class="belief-bar bg-red-500" 
-                                     :style="{ width: (player.beliefs?.p_wolf?.[tid] * 100 || 0) + '%' }">
+                    <!-- AI对战模式：显示信念值 -->
+                    <div v-if="gameMode === 'ai'">
+                        <h2 class="text-lg font-bold mb-2">狼人概率</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div v-for="(player, pid) in players" :key="pid" class="belief-section">
+                                <div class="text-center font-bold mb-1 text-sm" :class="{
+                                    'text-red-600': player.role === 'WOLF',
+                                    'text-blue-600': player.role === 'SEER',
+                                    'text-green-600': player.role === 'VILLAGER'
+                                }">
+                                    {{ player.name }} ({{ getRoleName(player.role) }})
                                 </div>
-                                <div class="belief-value">{{ formatBeliefValue(player.beliefs?.p_wolf?.[tid]) }}</div>
-                                <div class="role-indicator" :class="{
-                                    'text-red-600': target.role === 'WOLF',
-                                    'text-blue-600': target.role === 'SEER',
-                                    'text-green-600': target.role === 'VILLAGER'
-                                }">{{ getRoleName(target.role) }}</div>
+                                <div v-for="(target, tid) in players" :key="tid" v-if="tid != pid" 
+                                     class="relative mb-1 bg-gray-200 rounded overflow-hidden">
+                                    <div class="player-name">{{ target.name }}</div>
+                                    <div class="belief-bar bg-red-500" 
+                                         :style="{ width: (player.beliefs?.p_wolf?.[tid] * 100 || 0) + '%' }">
+                                    </div>
+                                    <div class="belief-value">{{ formatBeliefValue(player.beliefs?.p_wolf?.[tid]) }}</div>
+                                    <div class="role-indicator" :class="{
+                                        'text-red-600': target.role === 'WOLF',
+                                        'text-blue-600': target.role === 'SEER',
+                                        'text-green-600': target.role === 'VILLAGER'
+                                    }">{{ getRoleName(target.role) }}</div>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 人机对战模式：只显示玩家状态 -->
+                    <div v-else>
+                        <h2 class="text-lg font-bold mb-2">玩家状态</h2>
+                        <div class="space-y-2">
+                            <div v-for="(player, pid) in players" :key="pid" 
+                                 class="flex items-center justify-between p-2 bg-gray-100 rounded">
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-medium">{{ player.name }}</span>
+                                    <span v-if="player.role !== 'UNKNOWN'" 
+                                          class="text-sm px-2 py-1 rounded" 
+                                          :class="{
+                                            'bg-red-200 text-red-800': player.role === 'WOLF',
+                                            'bg-blue-200 text-blue-800': player.role === 'SEER',
+                                            'bg-green-200 text-green-800': player.role === 'VILLAGER'
+                                          }">
+                                        {{ getRoleName(player.role) }}
+                                    </span>
+                                    <span v-else class="text-sm px-2 py-1 bg-gray-200 text-gray-600 rounded">
+                                        身份未知
+                                    </span>
+                                </div>
+                                <div class="text-sm" :class="{
+                                    'text-gray-600': player.alive,
+                                    'text-red-600': !player.alive
+                                }">
+                                    {{ player.alive ? '存活中' : '已死亡' }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 p-3 bg-yellow-100 rounded-lg">
+                            <p class="text-sm text-yellow-800">
+                                <strong>提示：</strong> 在人机对战模式下，你只能看到自己的真实角色，其他玩家的角色需要通过游戏过程推断。
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -151,10 +196,203 @@
                 </button>
             </div>
         </div>
+        <!-- 人类玩家操作面板 -->
+        <div v-if="showHumanActions" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+            <div class="bg-white w-full max-w-md rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-bold mb-4">{{ humanActionData.action_type === 'wolf_kill' ? '狼人击杀' : 
+                                                      humanActionData.action_type === 'seer_check' ? '预言家查验' :
+                                                      humanActionData.action_type === 'talk' ? '发言选择' :
+                                                      humanActionData.action_type === 'vote' ? '投票选择' :
+                                                      humanActionData.action_type === 'last_words' ? '遗言选择' : '选择行动' }}</h2>
+                
+                <!-- 夜晚行动 -->
+                <div v-if="humanActionData.action_type === 'wolf_kill' || humanActionData.action_type === 'seer_check'">
+                    <p class="mb-4">{{ humanActionData.player_name }}，请选择目标：</p>
+                    <div class="space-y-2">
+                        <button v-for="option in humanActionData.options" :key="option.id"
+                                @click="submitHumanAction(humanActionData.action_type, option.id)"
+                                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+                            {{ option.name }}
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 发言选择 -->
+                <div v-if="humanActionData.action_type === 'talk'">
+                    <p class="mb-4">{{ humanActionData.player_name }}，请选择发言内容：</p>
+                    <div class="space-y-2 mb-4">
+                        <button v-for="option in humanActionData.options.talk_options" :key="option.type"
+                                @click="selectTalkType(option.type)"
+                                :class="['w-full py-2 px-4 rounded-md', 
+                                        selectedTalkType === option.type ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300']">
+                            {{ option.text }}
+                        </button>
+                    </div>
+                    
+                    <!-- 目标选择（指控或支持时需要） -->
+                    <div v-if="selectedTalkType === 'accuse' || selectedTalkType === 'support'">
+                        <p class="mb-2">选择目标：</p>
+                        <div class="space-y-2 mb-4">
+                            <button v-for="target in humanActionData.options.alive_targets" :key="target.id"
+                                    @click="selectedTarget = target.id"
+                                    :class="['w-full py-2 px-4 rounded-md',
+                                            selectedTarget === target.id ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300']">
+                                {{ target.name }}
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 预言家查验结果选择 -->
+                    <div v-if="selectedTalkType === 'claim_seer'">
+                        <p class="mb-2">是否公布查验结果？</p>
+                        <div class="space-y-2 mb-4">
+                            <button @click="selectedTarget = null; selectedCheckResult = null"
+                                    :class="['w-full py-2 px-4 rounded-md',
+                                            selectedTarget === null ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300']">
+                                只声称预言家身份
+                            </button>
+                            <button @click="selectedTarget = -1"
+                                    :class="['w-full py-2 px-4 rounded-md',
+                                            selectedTarget === -1 ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300']">
+                                公布查验结果
+                            </button>
+                        </div>
+                        
+                        <!-- 查验目标和结果选择 -->
+                        <div v-if="selectedTarget === -1">
+                            <p class="mb-2">选择查验的玩家：</p>
+                            <div class="space-y-2 mb-4">
+                                <button v-for="target in humanActionData.options.all_targets" :key="target.id"
+                                        @click="selectedTarget = target.id"
+                                        :class="['w-full py-2 px-4 rounded-md',
+                                                selectedTarget === target.id ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300']">
+                                    {{ target.name }}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 查验结果选择 -->
+                        <div v-if="selectedTarget !== null && selectedTarget !== -1 && selectedTarget >= 0">
+                            <p class="mb-2">查验结果：</p>
+                            <div class="space-y-2 mb-4">
+                                <button @click="selectedCheckResult = 'good'"
+                                        :class="['w-full py-2 px-4 rounded-md',
+                                                selectedCheckResult === 'good' ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300']">
+                                    好人
+                                </button>
+                                <button @click="selectedCheckResult = 'wolf'"
+                                        :class="['w-full py-2 px-4 rounded-md',
+                                                selectedCheckResult === 'wolf' ? 'bg-red-600 text-white' : 'bg-gray-200 hover:bg-gray-300']">
+                                    狼人
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button @click="submitHumanTalk"
+                            :disabled="!canSubmitTalk"
+                            class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:bg-gray-400">
+                        确认发言
+                    </button>
+                </div>
+                
+                <!-- 投票选择 -->
+                <div v-if="humanActionData.action_type === 'vote'">
+                    <p class="mb-4">{{ humanActionData.player_name }}，请选择投票对象：</p>
+                    <div class="space-y-2">
+                        <button v-for="option in humanActionData.options" :key="option.id"
+                                @click="submitHumanAction('vote', option.id)"
+                                class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">
+                            {{ option.name }}
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 遗言选择 -->
+                <div v-if="humanActionData.action_type === 'last_words'">
+                    <p class="mb-4 text-red-600 font-bold">{{ humanActionData.player_name }}，你已死亡，请选择遗言：</p>
+                    <div class="space-y-2 mb-4">
+                        <button v-for="option in humanActionData.options" :key="option.type"
+                                @click="selectTalkType(option.type)"
+                                :class="['w-full py-2 px-4 rounded-md', 
+                                        selectedTalkType === option.type ? 'bg-red-600 text-white' : 'bg-gray-200 hover:bg-gray-300']">
+                            {{ option.text }}
+                        </button>
+                    </div>
+                    
+                    <!-- 目标选择（指控或支持时需要） -->
+                    <div v-if="selectedTalkType === 'accuse' || selectedTalkType === 'support'">
+                        <p class="mb-2">选择目标：</p>
+                        <div class="space-y-2 mb-4">
+                            <button v-for="target in humanActionData.alive_targets" :key="target.id"
+                                    @click="selectedTarget = target.id"
+                                    :class="['w-full py-2 px-4 rounded-md',
+                                            selectedTarget === target.id ? 'bg-red-600 text-white' : 'bg-gray-200 hover:bg-gray-300']">
+                                {{ target.name }}
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 预言家查验结果选择（遗言版本） -->
+                    <div v-if="selectedTalkType === 'claim_seer'">
+                        <p class="mb-2">是否公布查验结果？</p>
+                        <div class="space-y-2 mb-4">
+                            <button @click="selectedTarget = null; selectedCheckResult = null"
+                                    :class="['w-full py-2 px-4 rounded-md',
+                                            selectedTarget === null ? 'bg-red-600 text-white' : 'bg-gray-200 hover:bg-gray-300']">
+                                只声称预言家身份
+                            </button>
+                            <button @click="selectedTarget = -1"
+                                    :class="['w-full py-2 px-4 rounded-md',
+                                            selectedTarget === -1 ? 'bg-red-600 text-white' : 'bg-gray-200 hover:bg-gray-300']">
+                                公布查验结果
+                            </button>
+                        </div>
+                        
+                        <!-- 查验目标和结果选择 -->
+                        <div v-if="selectedTarget === -1">
+                            <p class="mb-2">选择查验的玩家：</p>
+                            <div class="space-y-2 mb-4">
+                                <button v-for="target in humanActionData.all_targets" :key="target.id"
+                                        @click="selectedTarget = target.id"
+                                        :class="['w-full py-2 px-4 rounded-md',
+                                                selectedTarget === target.id ? 'bg-red-600 text-white' : 'bg-gray-200 hover:bg-gray-300']">
+                                    {{ target.name }}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 查验结果选择（遗言版本） -->
+                        <div v-if="selectedTarget !== null && selectedTarget !== -1 && selectedTarget >= 0">
+                            <p class="mb-2">查验结果：</p>
+                            <div class="space-y-2 mb-4">
+                                <button @click="selectedCheckResult = 'good'"
+                                        :class="['w-full py-2 px-4 rounded-md',
+                                                selectedCheckResult === 'good' ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300']">
+                                    好人
+                                </button>
+                                <button @click="selectedCheckResult = 'wolf'"
+                                        :class="['w-full py-2 px-4 rounded-md',
+                                                selectedCheckResult === 'wolf' ? 'bg-red-600 text-white' : 'bg-gray-200 hover:bg-gray-300']">
+                                    狼人
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button @click="submitLastWords"
+                            :disabled="!canSubmitTalk"
+                            class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 disabled:bg-gray-400">
+                        留下遗言
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- 房间设置弹窗 -->
     <div v-if="showSetupModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
         <div class="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 overflow-y-auto max-h-[90vh]">
-        <h2 class="text-xl font-bold mb-4">房间设置</h2>
+        <h2 class="text-xl font-bold mb-4">{{ gameMode === 'ai' ? 'AI对战设置' : '人机对战设置' }}</h2>
     
         <!-- 玩家人数 -->
         <label class="block text-sm font-semibold">玩家人数</label>
@@ -203,6 +441,15 @@
             <option value="random">随机 (Random)</option>
         </select>
     
+        <!-- 人机对战特有设置 -->
+        <div v-if="gameMode === 'human'">
+            <label class="block text-sm font-semibold">人类玩家位置</label>
+            <select v-model.number="setup.humanPlayerId"
+                    class="w-full border rounded px-2 py-1 mb-4">
+                <option v-for="i in setup.numPlayers" :key="i" :value="i-1">玩家{{ i }}</option>
+            </select>
+        </div>
+
         <!-- 底部按钮 -->
         <div class="flex justify-end space-x-2">
             <button @click="showSetupModal=false"
@@ -234,14 +481,38 @@
                     hostMessage: '',
                     nextStep: '',
                     showSetupModal: false,          // 弹窗显隐
+                    gameMode: 'ai',                 // 'ai' 或 'human'
+                    showHumanActions: false,        // 人类玩家操作面板
+                    humanActionData: {},            // 人类玩家操作数据
+                    selectedTalkType: null,         // 选中的发言类型
+                    selectedTarget: null,           // 选中的目标
+                    selectedCheckResult: null,      // 选中的查验结果
                     setup: {
                         numPlayers: 6,
                         numWolves : 2,
                         numSeers : 1,
                         assignMode: 'random',
                         strategy  : 'belief',
-                        roles     : []        // 当 assignMode == 'manual' 时填充
+                        roles     : [],             // 当 assignMode == 'manual' 时填充
+                        humanPlayerId: 0            // 人类玩家位置
                     }
+                }
+            },
+            computed: {
+                canSubmitTalk() {
+                    if (!this.selectedTalkType) return false
+                    if (this.selectedTalkType === 'accuse' || this.selectedTalkType === 'support') {
+                        return this.selectedTarget !== null
+                    }
+                    if (this.selectedTalkType === 'claim_seer') {
+                        // 声称预言家时，可以选择不公布查验结果（只声称身份）
+                        // 或者必须同时选择目标和结果
+                        if (this.selectedTarget !== null) {
+                            return this.selectedCheckResult !== null
+                        }
+                        return true  // 可以只声称身份不公布结果
+                    }
+                    return true
                 }
             },
             watch: {
@@ -252,6 +523,14 @@
                 }
             },
             methods: {
+                startAIGame() {
+                    this.gameMode = 'ai'
+                    this.showSetupModal = true
+                },
+                startHumanAIGame() {
+                    this.gameMode = 'human'
+                    this.showSetupModal = true
+                },
                 startGame() {
                     if (!this.socket) {
                         this.socket = io()
@@ -266,6 +545,18 @@
                         this.setup.roles = Array(this.setup.numPlayers).fill(1)   // 默认村民
                     }
 
+                    /* ---------- 关键：把 camelCase 转成 snake_case ---------- */
+                    const payload = {
+                        num_players : this.setup.numPlayers,
+                        num_wolves  : this.setup.numWolves,
+                        num_Seers   : this.setup.numSeers,
+                        assign_mode : this.setup.assignMode,
+                        roles       : this.setup.roles,
+                        strategy    : this.setup.strategy,
+                        game_mode   : this.gameMode,
+                        human_player_id: this.setup.humanPlayerId
+                    }
+
                     // socket 只建一次
                     if (!this.socket) {
                         this.socket = io()
@@ -275,32 +566,61 @@
                         this.socket.on('connect', () => {
                             this.socket.emit('start_game', payload)
                         })
-                        } else {
-                        // ❷ 已经连上过，直接 emit
+                    } else {
+                        // ❂ 已经连上过，直接 emit
                         this.socket.emit('start_game', payload)
-                        }
-
-                    /* ---------- 关键：把 camelCase 转成 snake_case ---------- */
-                    const payload = {
-                        num_players : this.setup.numPlayers,
-                        num_wolves  : this.setup.numWolves,
-                        num_Seers   : this.setup.numSeers,
-                        assign_mode : this.setup.assignMode,
-                        roles       : this.setup.roles,
-                        strategy    : this.setup.strategy
                     }
-
-                    this.socket.emit('start_game', payload)
 
                     this.showSetupModal = false
                     console.log('[Vue] 已发 start_game ->', payload)
-                    },
+                },
 
                 endGame() {
                     if (this.socket) {
                         this.socket.emit('end_game')
                     }
-                    },
+                },
+                
+                // 人类玩家操作相关方法
+                selectTalkType(type) {
+                    this.selectedTalkType = type
+                    this.selectedTarget = null
+                    this.selectedCheckResult = null
+                },
+                
+                submitHumanAction(actionType, targetId) {
+                    this.socket.emit('human_action', {
+                        action_type: actionType,
+                        target_id: targetId
+                    })
+                    this.showHumanActions = false
+                },
+                
+                submitHumanTalk() {
+                    this.socket.emit('human_action', {
+                        action_type: 'talk',
+                        talk_type: this.selectedTalkType,
+                        target_id: this.selectedTarget,
+                        check_result: this.selectedCheckResult
+                    })
+                    this.showHumanActions = false
+                    this.selectedTalkType = null
+                    this.selectedTarget = null
+                    this.selectedCheckResult = null
+                },
+                
+                submitLastWords() {
+                    this.socket.emit('human_action', {
+                        action_type: 'last_words',
+                        talk_type: this.selectedTalkType,
+                        target_id: this.selectedTarget,
+                        check_result: this.selectedCheckResult
+                    })
+                    this.showHumanActions = false
+                    this.selectedTalkType = null
+                    this.selectedTarget = null
+                    this.selectedCheckResult = null
+                },
 
                 updatePhaseAndDay({ phase, message }) {
                     // 1) 更新 currentPhase
@@ -311,7 +631,7 @@
 
                     // 2) 若是 day_start，解析天数
                     if (phase === 'day_start') {
-                        const m = message.match(/第\s+(\d+)\s+天/);   // 支持 “第 X 天开始”
+                        const m = message.match(/第\s+(\d+)\s+天/);   // 支持 "第 X 天开始"
                         if (m) this.day = parseInt(m[1]);
                     }
                     },
@@ -325,6 +645,7 @@
                         this.gameStarted = true
                         this.currentPhase = 'night'   // 游戏一开始是夜晚
                         this.day = 1
+                        this.gameMode = data.game_mode || 'ai'  // 设置游戏模式
                         this.players = data.players.map(p => ({
                             ...p, 
                             alive: true,
@@ -333,10 +654,19 @@
                                 p_seer: new Array(data.players.length).fill(0)
                             }
                         }))
-                        this.addLog({
-                            type: 'system',
-                            message: '游戏开始！'
-                        })
+                        
+                        // 根据游戏模式显示不同的开始消息
+                        if (this.gameMode === 'human') {
+                            this.addLog({
+                                type: 'system',
+                                message: '【调试模式】人机对战开始！当前显示所有角色和信念值用于调试。'
+                            })
+                        } else {
+                            this.addLog({
+                                type: 'system',
+                                message: 'AI对战模式开始！'
+                            })
+                        }
                     })
 
                     this.socket.on('update_beliefs', (data) => {
@@ -355,6 +685,21 @@
                             phase: data.phase
                         })
                         this.updatePhaseAndDay(data)       // ← 新增
+                        
+                        // 处理死亡消息，更新玩家状态
+                        if (data.phase === 'death_announce') {
+                            const deathMatch = data.message.match(/(.+?)\s+死亡/)
+                            if (deathMatch) {
+                                const deadPlayerName = deathMatch[1]
+                                // 找到对应的玩家并标记为死亡
+                                for (let player of this.players) {
+                                    if (player.name === deadPlayerName) {
+                                        player.alive = false
+                                        break
+                                    }
+                                }
+                            }
+                        }
                     })
 
                     this.socket.on('wait_next', (data) => {
@@ -363,11 +708,25 @@
 
                     this.socket.on('game_over', (data) => {
                         this.showResult = true
-                        this.resultMessage = data.winner === 'WOLF' ? '狼人获胜！' : '好人获胜！'
+                        this.resultMessage = data.winner === '狼人' ? '狼人获胜！' : data.winner === '好人' ? '好人获胜！' : '游戏未完成'
                         for (let pid in data.roles) {
                             this.players[pid].role = data.roles[pid]
                         }
                         this.nextStep = ''
+                    })
+                    
+                    // 人机对战相关事件监听
+                    this.socket.on('human_action_request', (data) => {
+                        this.humanActionData = data
+                        this.showHumanActions = true
+                        this.selectedTalkType = null
+                        this.selectedTarget = null
+                        this.selectedCheckResult = null
+                    })
+                    
+                    this.socket.on('human_action_completed', () => {
+                        // 人类行动完成，可以继续游戏流程
+                        console.log('人类行动已完成')
                     })
                 },
                 formatBeliefValue(value) {
@@ -421,7 +780,8 @@
                     const roleNames = {
                         'WOLF': '狼人',
                         'VILLAGER': '村民',
-                        'SEER': '预言家'
+                        'SEER': '预言家',
+                        'UNKNOWN': '身份未知'
                     }
                     return roleNames[role] || role
                 },
