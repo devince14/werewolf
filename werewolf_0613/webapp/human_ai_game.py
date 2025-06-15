@@ -117,6 +117,40 @@ class HumanAIGameHandler:
             'check_results': ['wolf', 'good']  # 预言家查验结果选项
         })
         return True
+
+    def handle_last_words_human(self):
+        """处理人类玩家的遗言阶段"""
+        if self.game_state.env.alive[self.human_player_id]:
+            return False
+
+        talk_options = [
+            {'type': 'claim_seer', 'text': '声称预言家'},
+            {'type': 'claim_good', 'text': '声称好人'},
+            {'type': 'accuse', 'text': '指控某人是狼'},
+            {'type': 'support', 'text': '支持某人是好人'},
+            {'type': 'pass', 'text': '保持沉默'}
+        ]
+
+        all_targets = []
+        for i in range(self.game_state.num_players):
+            if i != self.human_player_id:
+                status = "存活" if self.game_state.env.alive[i] else "已死"
+                all_targets.append({'id': i,
+                                   'name': f"{self.game_state.players[i]['name']}({status})"})
+
+        alive_targets = []
+        for i in range(self.game_state.num_players):
+            if self.game_state.env.alive[i] and i != self.human_player_id:
+                alive_targets.append({'id': i,
+                                     'name': self.game_state.players[i]['name']})
+
+        self.broadcast_human_action_request('last_words', {
+            'talk_options': talk_options,
+            'all_targets': all_targets,
+            'alive_targets': alive_targets,
+            'check_results': ['wolf', 'good']
+        })
+        return True
         
     def handle_vote_phase_human(self):
         """处理投票阶段的人类玩家行动"""
@@ -167,7 +201,11 @@ class HumanAIGameHandler:
             elif action_type == 'talk':
                 # 处理发言
                 self._process_human_talk(talk_type, target_id, check_result)
-                
+
+            elif action_type == 'last_words':
+                # 处理遗言
+                self._process_human_legacy(talk_type, target_id, check_result)
+
             elif action_type == 'vote':
                 # 处理投票
                 self.game_state.vote_results[self.human_player_id] = target_id
@@ -190,6 +228,9 @@ class HumanAIGameHandler:
                 self._continue_talk_phase()
             elif action_type in ['wolf_kill', 'seer_check']:
                 self._continue_night_phase()
+            elif action_type == 'last_words':
+                # 遗言不影响游戏流程，直接继续
+                pass
             elif action_type == 'vote':
                 self._continue_vote_phase()
             
@@ -299,6 +340,92 @@ class HumanAIGameHandler:
             return  # 沉默不添加事件
         
         # 添加事件到环境日志（仅用于记录）
+        if hasattr(self.game_state.env, 'event_log'):
+            self.game_state.env.event_log.append(event)
+
+    def _process_human_legacy(self, talk_type, target_id, check_result=None):
+        """处理人类玩家的遗言"""
+        human_player = self.game_state.players[self.human_player_id]
+        speaker_name = human_player['name']
+
+        event = {
+            "phase": "legacy",
+            "speaker": self.human_player_id,
+            "type": None,
+            "target": target_id,
+            "role": None
+        }
+
+        prefix = "【遗言】"
+
+        message = ""
+
+        if talk_type == 'claim_seer':
+            event["type"] = TalkType.CLAIM_SEER
+            if target_id is not None and target_id >= 0 and check_result is not None:
+                target_name = self.game_state.players[target_id]['name']
+                result_text = "狼人" if check_result == "wolf" else "好人"
+                role_int = Role.WOLF if check_result == "wolf" else Role.VILLAGER
+                event["role"] = role_int
+                event["check_day"] = self.game_state.day - 1
+                message = f"{prefix}{speaker_name} 声称自己是预言家！昨晚我查验了{target_name}，结果是{result_text}！"
+                emit('host_message', {'message': message, 'phase': 'talk_seer_claim'}, broadcast=True)
+
+                claim_entry = (0, self.human_player_id, int(TalkType.CLAIM_SEER), -1, -1)
+                self.game_state.env.public_log.append(claim_entry)
+
+                if human_player["role"] == Role.SEER:
+                    self.game_state.env.seer_records.append((
+                        self.game_state.day - 1,
+                        target_id,
+                        role_int
+                    ))
+
+                check_talk_type = TalkType.ACCUSE if check_result == "wolf" else TalkType.SUPPORT
+                check_entry = (0, self.human_player_id, int(check_talk_type), target_id, role_int)
+                self.game_state.env.public_log.append(check_entry)
+
+                self._update_beliefs_from_events([claim_entry, check_entry])
+            else:
+                message = f"{prefix}{speaker_name} 声称自己是预言家！"
+                emit('host_message', {'message': message, 'phase': 'talk_seer_claim'}, broadcast=True)
+                log_entry = (0, self.human_player_id, int(TalkType.CLAIM_SEER), -1, -1)
+                self.game_state.env.public_log.append(log_entry)
+                self._update_beliefs_from_events([log_entry])
+
+        elif talk_type == 'claim_good':
+            event["type"] = TalkType.CLAIM_GOOD
+            message = f"{prefix}{speaker_name} 说：我是好人。"
+            emit('host_message', {'message': message, 'phase': 'talk'}, broadcast=True)
+            log_entry = (0, self.human_player_id, int(TalkType.CLAIM_GOOD), -1, -1)
+            self.game_state.env.public_log.append(log_entry)
+            self._update_beliefs_from_events([log_entry])
+
+        elif talk_type == 'accuse' and target_id is not None:
+            event["type"] = TalkType.ACCUSE
+            event["role"] = Role.WOLF
+            target_name = self.game_state.players[target_id]['name']
+            message = f"{prefix}{speaker_name} 指控 {target_name} 是狼人！"
+            emit('host_message', {'message': message, 'phase': 'talk'}, broadcast=True)
+            log_entry = (0, self.human_player_id, int(TalkType.ACCUSE), target_id, Role.WOLF)
+            self.game_state.env.public_log.append(log_entry)
+            self._update_beliefs_from_events([log_entry])
+
+        elif talk_type == 'support' and target_id is not None:
+            event["type"] = TalkType.SUPPORT
+            event["role"] = Role.VILLAGER
+            target_name = self.game_state.players[target_id]['name']
+            message = f"{prefix}{speaker_name} 认为 {target_name} 是好人。"
+            emit('host_message', {'message': message, 'phase': 'talk'}, broadcast=True)
+            log_entry = (0, self.human_player_id, int(TalkType.SUPPORT), target_id, Role.VILLAGER)
+            self.game_state.env.public_log.append(log_entry)
+            self._update_beliefs_from_events([log_entry])
+
+        elif talk_type == 'pass':
+            message = f"{prefix}{speaker_name}保持沉默。"
+            emit('host_message', {'message': message, 'phase': 'talk'}, broadcast=True)
+            return
+
         if hasattr(self.game_state.env, 'event_log'):
             self.game_state.env.event_log.append(event)
             
