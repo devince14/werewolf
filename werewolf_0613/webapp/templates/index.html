@@ -690,7 +690,7 @@
                         if (data.phase === 'death_announce') {
                             const deathMatch = data.message.match(/(.+?)\s+死亡/)
                             if (deathMatch) {
-                                const deadPlayerName = deathMatch[1]
+                                const deadPlayerName = deathMatch[1].replace(/（.*?）/, '')
                                 // 找到对应的玩家并标记为死亡
                                 for (let player of this.players) {
                                     if (player.name === deadPlayerName) {

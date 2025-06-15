@@ -252,8 +252,11 @@ def broadcast_death(victim_id, death_cause="unknown"):
         
         # 根据游戏模式决定是否显示角色
         if game_state.game_mode == 'human':
-            # 临时调试：显示死者角色
-            broadcast_host_message(f"{victim['name']}（{victim['role'].name}）死亡 - {death_cause}", "death_announce")
+            # 不在死亡公告中显示角色
+            broadcast_host_message(
+                f"{victim['name']} 死亡 - {death_cause}",
+                "death_announce",
+            )
             
             # 只有夜晚被杀的人类玩家才能留遗言，且是第一个夜晚被杀的人
             if (game_state.human_handler and 
@@ -275,8 +278,11 @@ def broadcast_death(victim_id, death_cause="unknown"):
                         if game_state.human_handler.handle_last_words_human():
                             return  # 等待人类玩家选择遗言
         else:
-            # AI模式：显示死者角色（观战模式）
-            broadcast_host_message(f"{victim['name']}（{victim['role'].name}）死亡", "death_announce")
+            # AI模式：观战时也不在公告中展示角色
+            broadcast_host_message(
+                f"{victim['name']} 死亡 - {death_cause}",
+                "death_announce",
+            )
 
 def broadcast_vote_results():
     """广播投票结果"""
