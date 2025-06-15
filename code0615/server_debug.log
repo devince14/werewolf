@@ -1,0 +1,462 @@
+2025-06-15 15:30:42 | INFO     | werkzeug:97 | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 15:30:42 | INFO     | werkzeug:97 | [33mPress CTRL+C to quit[0m
+2025-06-15 15:30:42 | INFO     | werkzeug:97 |  * Restarting with stat
+2025-06-15 15:30:44 | WARNING  | werkzeug:97 |  * Debugger is active!
+2025-06-15 15:30:44 | INFO     | werkzeug:97 |  * Debugger PIN: 140-156-874
+2025-06-15 15:30:45 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:30:45] "GET / HTTP/1.1" 200 -
+2025-06-15 15:30:47 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:30:47] "GET /socket.io/?EIO=4&transport=polling&t=PToVtyf HTTP/1.1" 200 -
+2025-06-15 15:30:47 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:30:47] "POST /socket.io/?EIO=4&transport=polling&t=PToVtyw&sid=Jnhm-wIqMUzZKYwUAAAA HTTP/1.1" 200 -
+2025-06-15 15:30:47 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:30:47] "GET /socket.io/?EIO=4&transport=polling&t=PToVtyy&sid=Jnhm-wIqMUzZKYwUAAAA HTTP/1.1" 200 -
+2025-06-15 15:30:47 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:30:47] "POST /socket.io/?EIO=4&transport=polling&t=PToVtzM&sid=Jnhm-wIqMUzZKYwUAAAA HTTP/1.1" 200 -
+2025-06-15 15:30:47 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:30:47] "GET /socket.io/?EIO=4&transport=polling&t=PToVtzO&sid=Jnhm-wIqMUzZKYwUAAAA HTTP/1.1" 200 -
+2025-06-15 15:30:48 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:30:48] "GET /socket.io/?EIO=4&transport=polling&t=PToVu8r HTTP/1.1" 200 -
+2025-06-15 15:30:48 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:30:48] "POST /socket.io/?EIO=4&transport=polling&t=PToVu91&sid=Md3g_2VppShdi-wWAAAC HTTP/1.1" 200 -
+2025-06-15 15:30:48 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:30:48] "GET /socket.io/?EIO=4&transport=polling&t=PToVu93&sid=Md3g_2VppShdi-wWAAAC HTTP/1.1" 200 -
+2025-06-15 15:30:48 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:30:48] "GET /socket.io/?EIO=4&transport=polling&t=PToVuA9&sid=Md3g_2VppShdi-wWAAAC HTTP/1.1" 200 -
+2025-06-15 15:30:52 | DEBUG    | __main__:772 | --- 预言家行动已收集 ---
+2025-06-15 15:30:52 | DEBUG    | __main__:777 | 预言家3  查验 1
+2025-06-15 15:30:53 | DEBUG    | __main__:796 | 执行环境.step, 夜晚行动: {'1': array([2]), '4': array([0]), '0': 6, '2': 6, '3': array([1]), '5': 6}
+2025-06-15 15:30:53 | DEBUG    | __main__:798 | 环境.step 完成, 存活: [0, 1, 3, 4, 5]
+2025-06-15 15:30:53 | DEBUG    | __main__:805 | 检查最近5个事件
+2025-06-15 15:30:53 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 3, 'target': 1, 'role': 0, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 15:30:53 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 2, 'alive': [0, 1, 3, 4, 5]}
+2025-06-15 15:30:56 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=0
+2025-06-15 15:31:06 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=1
+2025-06-15 15:31:07 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=3
+2025-06-15 15:31:08 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=4
+2025-06-15 15:31:10 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=5
+2025-06-15 15:31:13 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:31:13] "GET /socket.io/?EIO=4&transport=websocket&sid=Md3g_2VppShdi-wWAAAC HTTP/1.1" 200 -
+2025-06-15 15:31:17 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:31:17] "GET /socket.io/?EIO=4&transport=polling&t=PToV_ED HTTP/1.1" 200 -
+2025-06-15 15:31:17 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:31:17] "POST /socket.io/?EIO=4&transport=polling&t=PToV_EO&sid=Pz6cecKe2P_f2xYlAAAE HTTP/1.1" 200 -
+2025-06-15 15:31:17 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:31:17] "GET /socket.io/?EIO=4&transport=polling&t=PToV_EP&sid=Pz6cecKe2P_f2xYlAAAE HTTP/1.1" 200 -
+2025-06-15 15:31:17 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:31:17] "GET /socket.io/?EIO=4&transport=polling&t=PToV_FR&sid=Pz6cecKe2P_f2xYlAAAE HTTP/1.1" 200 -
+2025-06-15 15:31:19 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:31:19] "GET /socket.io/?EIO=4&transport=websocket&sid=Pz6cecKe2P_f2xYlAAAE HTTP/1.1" 200 -
+2025-06-15 15:31:23 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:31:23] "GET /socket.io/?EIO=4&transport=polling&t=PToW0hJ HTTP/1.1" 200 -
+2025-06-15 15:31:23 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:31:23] "POST /socket.io/?EIO=4&transport=polling&t=PToW0hW&sid=SgecpgIdIBT5iiLEAAAG HTTP/1.1" 200 -
+2025-06-15 15:31:23 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:31:23] "GET /socket.io/?EIO=4&transport=polling&t=PToW0hX&sid=SgecpgIdIBT5iiLEAAAG HTTP/1.1" 200 -
+2025-06-15 15:31:26 | DEBUG    | human_ai_game:423 | AI狼人0(玩家1) -> 2
+2025-06-15 15:31:37 | DEBUG    | __main__:772 | --- 预言家行动已收集 ---
+2025-06-15 15:31:37 | DEBUG    | __main__:777 | 预言家5  查验 4
+2025-06-15 15:31:38 | DEBUG    | __main__:796 | 执行环境.step, 夜晚行动: {'1': 5, '0': array([2]), '2': 6, '3': 6, '4': 6, '5': array([4])}
+2025-06-15 15:31:38 | DEBUG    | __main__:798 | 环境.step 完成, 存活: [0, 1, 2, 3, 4]
+2025-06-15 15:31:38 | DEBUG    | __main__:805 | 检查最近5个事件
+2025-06-15 15:31:38 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 5, 'target': 4, 'role': 1, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 15:31:38 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 5, 'alive': [0, 1, 2, 3, 4]}
+2025-06-15 15:31:39 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=0
+2025-06-15 15:31:40 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=1
+2025-06-15 15:31:45 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=2
+2025-06-15 15:31:46 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=3
+2025-06-15 15:31:47 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=4
+2025-06-15 15:31:52 | DEBUG    | __main__:1109 | --- 投票动作 ---
+2025-06-15 15:31:52 | DEBUG    | __main__:1111 | 玩家1  → 弃票
+2025-06-15 15:31:52 | DEBUG    | __main__:1111 | 玩家0  → 2
+2025-06-15 15:31:52 | DEBUG    | __main__:1111 | 玩家2  → 0
+2025-06-15 15:31:52 | DEBUG    | __main__:1111 | 玩家3  → 0
+2025-06-15 15:31:52 | DEBUG    | __main__:1111 | 玩家4  → 0
+2025-06-15 15:31:52 | DEBUG    | __main__:1117 | 票数统计: [3, 0, 1, 0, 0, 0]
+2025-06-15 15:32:54 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:32:54] "GET /socket.io/?EIO=4&transport=websocket&sid=Jnhm-wIqMUzZKYwUAAAA HTTP/1.1" 200 -
+2025-06-15 15:33:21 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:33:21] "GET /socket.io/?EIO=4&transport=websocket&sid=SgecpgIdIBT5iiLEAAAG HTTP/1.1" 200 -
+2025-06-15 15:35:05 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:35:05] "GET / HTTP/1.1" 200 -
+2025-06-15 15:35:08 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:35:08] "GET /socket.io/?EIO=4&transport=polling&t=PToWtYg HTTP/1.1" 200 -
+2025-06-15 15:35:08 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:35:08] "POST /socket.io/?EIO=4&transport=polling&t=PToWtYs&sid=AhWeTiUoJeD3jZWiAAAI HTTP/1.1" 200 -
+2025-06-15 15:35:08 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:35:08] "GET /socket.io/?EIO=4&transport=polling&t=PToWtYu&sid=AhWeTiUoJeD3jZWiAAAI HTTP/1.1" 200 -
+2025-06-15 15:35:11 | DEBUG    | __main__:772 | --- 预言家行动已收集 ---
+2025-06-15 15:35:11 | DEBUG    | __main__:777 | 预言家3  查验 5
+2025-06-15 15:35:12 | DEBUG    | __main__:796 | 执行环境.step, 夜晚行动: {'1': array([0]), '4': array([0]), '0': 6, '2': 6, '3': array([5]), '5': 6}
+2025-06-15 15:35:12 | DEBUG    | __main__:798 | 环境.step 完成, 存活: [1, 2, 3, 4, 5]
+2025-06-15 15:35:12 | DEBUG    | __main__:805 | 检查最近5个事件
+2025-06-15 15:35:12 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 3, 'target': 5, 'role': 1, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 15:35:12 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 0, 'alive': [1, 2, 3, 4, 5]}
+2025-06-15 15:35:13 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=0
+2025-06-15 15:35:14 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=1
+2025-06-15 15:35:16 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=2
+2025-06-15 15:35:17 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=3
+2025-06-15 15:35:18 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=4
+2025-06-15 15:35:19 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=5
+2025-06-15 15:35:20 | DEBUG    | __main__:1109 | --- 投票动作 ---
+2025-06-15 15:35:20 | DEBUG    | __main__:1111 | 玩家1  → 2
+2025-06-15 15:35:20 | DEBUG    | __main__:1111 | 玩家2  → 1
+2025-06-15 15:35:20 | DEBUG    | __main__:1111 | 玩家3  → 1
+2025-06-15 15:35:20 | DEBUG    | __main__:1111 | 玩家4  → 2
+2025-06-15 15:35:20 | DEBUG    | __main__:1111 | 玩家5  → 1
+2025-06-15 15:35:20 | DEBUG    | __main__:1117 | 票数统计: [0, 3, 2, 0, 0, 0]
+2025-06-15 15:35:22 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:35:22] "GET /socket.io/?EIO=4&transport=websocket&sid=AhWeTiUoJeD3jZWiAAAI HTTP/1.1" 200 -
+2025-06-15 15:35:25 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:35:25] "GET /socket.io/?EIO=4&transport=polling&t=PToWxk0 HTTP/1.1" 200 -
+2025-06-15 15:35:25 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:35:25] "POST /socket.io/?EIO=4&transport=polling&t=PToWxkC&sid=tKb1RV9TDzfBLWWTAAAK HTTP/1.1" 200 -
+2025-06-15 15:35:25 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:35:25] "GET /socket.io/?EIO=4&transport=polling&t=PToWxkD&sid=tKb1RV9TDzfBLWWTAAAK HTTP/1.1" 200 -
+2025-06-15 15:35:25 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:35:25] "GET /socket.io/?EIO=4&transport=polling&t=PToWxl7&sid=tKb1RV9TDzfBLWWTAAAK HTTP/1.1" 200 -
+2025-06-15 15:35:28 | DEBUG    | human_ai_game:423 | AI狼人2(玩家3) -> 3
+2025-06-15 15:35:31 | DEBUG    | __main__:772 | --- 预言家行动已收集 ---
+2025-06-15 15:35:31 | DEBUG    | __main__:777 | 预言家4  查验 1
+2025-06-15 15:35:31 | DEBUG    | __main__:796 | 执行环境.step, 夜晚行动: {'0': 1, '2': array([3]), '1': 6, '3': 6, '4': array([1]), '5': 6}
+2025-06-15 15:35:31 | DEBUG    | __main__:798 | 环境.step 完成, 存活: [0, 1, 2, 4, 5]
+2025-06-15 15:35:31 | DEBUG    | __main__:805 | 检查最近5个事件
+2025-06-15 15:35:31 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 4, 'target': 1, 'role': 1, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 15:35:31 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 3, 'alive': [0, 1, 2, 4, 5]}
+2025-06-15 15:35:33 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=0
+2025-06-15 15:35:35 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=1
+2025-06-15 15:35:36 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=2
+2025-06-15 15:35:37 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=4
+2025-06-15 15:35:37 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=5
+2025-06-15 15:35:39 | DEBUG    | __main__:1109 | --- 投票动作 ---
+2025-06-15 15:35:39 | DEBUG    | __main__:1111 | 玩家0  → 弃票
+2025-06-15 15:35:39 | DEBUG    | __main__:1111 | 玩家1  → 0
+2025-06-15 15:35:39 | DEBUG    | __main__:1111 | 玩家2  → 1
+2025-06-15 15:35:39 | DEBUG    | __main__:1111 | 玩家4  → 0
+2025-06-15 15:35:39 | DEBUG    | __main__:1111 | 玩家5  → 0
+2025-06-15 15:35:39 | DEBUG    | __main__:1117 | 票数统计: [3, 1, 0, 0, 0, 0]
+2025-06-15 15:35:42 | DEBUG    | __main__:772 | --- 预言家行动已收集 ---
+2025-06-15 15:35:42 | DEBUG    | __main__:777 | 预言家4  查验 5
+2025-06-15 15:35:43 | DEBUG    | __main__:796 | 执行环境.step, 夜晚行动: {'2': array([1]), '1': 6, '4': array([5]), '5': 6}
+2025-06-15 15:35:43 | DEBUG    | __main__:798 | 环境.step 完成, 存活: [2, 4, 5]
+2025-06-15 15:35:43 | DEBUG    | __main__:805 | 检查最近5个事件
+2025-06-15 15:35:43 | DEBUG    | __main__:807 | 事件内容: {'day': 1, 'phase': 'talk', 'speaker': 5, 'type': 0, 'target': -1, 'alive': [0, 1, 2, 4, 5]}
+2025-06-15 15:35:43 | DEBUG    | __main__:807 | 事件内容: {'day': 1, 'phase': 'vote', 'voter': 0, 'target': 6, 'alive': [0, 1, 2, 4, 5]}
+2025-06-15 15:35:43 | DEBUG    | __main__:807 | 事件内容: {'day': 1, 'phase': 'vote', 'out': 0, 'votes': [3, 1, 0, 0, 0, 0], 'alive': [1, 2, 4, 5]}
+2025-06-15 15:35:43 | DEBUG    | __main__:807 | 事件内容: {'day': 1, 'phase': 'seer_check', 'seer': 4, 'target': 5, 'role': 1, 'alive': [1, 2, 4, 5]}
+2025-06-15 15:35:43 | DEBUG    | __main__:807 | 事件内容: {'day': 1, 'phase': 'night', 'victim': 1, 'alive': [2, 4, 5]}
+2025-06-15 15:35:44 | DEBUG    | __main__:985 | 发言阶段开始: day=2, current_speaker=0
+2025-06-15 15:35:44 | DEBUG    | __main__:985 | 发言阶段开始: day=2, current_speaker=2
+2025-06-15 15:35:46 | DEBUG    | __main__:985 | 发言阶段开始: day=2, current_speaker=4
+2025-06-15 15:35:46 | DEBUG    | __main__:985 | 发言阶段开始: day=2, current_speaker=5
+2025-06-15 15:35:47 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:35:47] "GET /socket.io/?EIO=4&transport=websocket&sid=tKb1RV9TDzfBLWWTAAAK HTTP/1.1" 200 -
+2025-06-15 15:37:17 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:37:17] "GET /socket.io/?EIO=4&transport=polling&t=PToXN62 HTTP/1.1" 200 -
+2025-06-15 15:37:17 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:37:17] "POST /socket.io/?EIO=4&transport=polling&t=PToXN6D&sid=3n7fCoPehM7mCpaPAAAM HTTP/1.1" 200 -
+2025-06-15 15:37:17 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:37:17] "GET /socket.io/?EIO=4&transport=polling&t=PToXN6E&sid=3n7fCoPehM7mCpaPAAAM HTTP/1.1" 200 -
+2025-06-15 15:37:20 | DEBUG    | human_ai_game:423 | AI狼人4(玩家5) -> 5
+2025-06-15 15:37:22 | DEBUG    | __main__:772 | --- 预言家行动已收集 ---
+2025-06-15 15:37:22 | DEBUG    | __main__:777 | 预言家3  查验 4
+2025-06-15 15:37:23 | DEBUG    | __main__:796 | 执行环境.step, 夜晚行动: {'0': 5, '4': array([5]), '1': 6, '2': 6, '3': array([4]), '5': 6}
+2025-06-15 15:37:23 | DEBUG    | __main__:798 | 环境.step 完成, 存活: [0, 1, 2, 3, 4]
+2025-06-15 15:37:23 | DEBUG    | __main__:805 | 检查最近5个事件
+2025-06-15 15:37:23 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 3, 'target': 4, 'role': 0, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 15:37:23 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 5, 'alive': [0, 1, 2, 3, 4]}
+2025-06-15 15:37:24 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=0
+2025-06-15 15:37:27 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=1
+2025-06-15 15:37:27 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=2
+2025-06-15 15:37:28 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=3
+2025-06-15 15:37:29 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=4
+2025-06-15 15:37:32 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:37:32] "GET /socket.io/?EIO=4&transport=websocket&sid=3n7fCoPehM7mCpaPAAAM HTTP/1.1" 200 -
+2025-06-15 15:44:18 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:44:18] "GET / HTTP/1.1" 200 -
+2025-06-15 15:44:22 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:44:22] "GET /socket.io/?EIO=4&transport=polling&t=PToY-oA HTTP/1.1" 200 -
+2025-06-15 15:44:22 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:44:22] "POST /socket.io/?EIO=4&transport=polling&t=PToY-oP&sid=9yyUuPYrc8wbBsldAAAO HTTP/1.1" 200 -
+2025-06-15 15:44:22 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:44:22] "GET /socket.io/?EIO=4&transport=polling&t=PToY-oR&sid=9yyUuPYrc8wbBsldAAAO HTTP/1.1" 200 -
+2025-06-15 15:44:26 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:44:26] "GET /socket.io/?EIO=4&transport=websocket&sid=9yyUuPYrc8wbBsldAAAO HTTP/1.1" 200 -
+2025-06-15 15:44:27 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:44:27] "GET /socket.io/?EIO=4&transport=polling&t=PToZ0BR HTTP/1.1" 200 -
+2025-06-15 15:44:27 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:44:27] "POST /socket.io/?EIO=4&transport=polling&t=PToZ0Bm&sid=pj4_7v2afWtb7rV6AAAQ HTTP/1.1" 200 -
+2025-06-15 15:44:27 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:44:27] "GET /socket.io/?EIO=4&transport=polling&t=PToZ0Bn&sid=pj4_7v2afWtb7rV6AAAQ HTTP/1.1" 200 -
+2025-06-15 15:44:31 | DEBUG    | human_ai_game:423 | AI狼人2(玩家3) -> 4
+2025-06-15 15:44:37 | DEBUG    | __main__:772 | --- 预言家行动已收集 ---
+2025-06-15 15:44:37 | DEBUG    | __main__:777 | 预言家5  查验 0
+2025-06-15 15:44:38 | DEBUG    | __main__:796 | 执行环境.step, 夜晚行动: {'0': 5, '2': array([4]), '1': 6, '3': 6, '4': 6, '5': array([0])}
+2025-06-15 15:44:38 | DEBUG    | __main__:798 | 环境.step 完成, 存活: [0, 1, 2, 3, 4]
+2025-06-15 15:44:38 | DEBUG    | __main__:805 | 检查最近5个事件
+2025-06-15 15:44:38 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 5, 'target': 0, 'role': 0, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 15:44:38 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 5, 'alive': [0, 1, 2, 3, 4]}
+2025-06-15 15:49:20 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:49:20] "GET /socket.io/?EIO=4&transport=websocket&sid=pj4_7v2afWtb7rV6AAAQ HTTP/1.1" 200 -
+2025-06-15 15:49:27 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:49:27] "GET /socket.io/?EIO=4&transport=polling&t=PToa9MZ HTTP/1.1" 200 -
+2025-06-15 15:49:27 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:49:27] "POST /socket.io/?EIO=4&transport=polling&t=PToa9Mo&sid=_Ak5_OtuxlmWhpUJAAAS HTTP/1.1" 200 -
+2025-06-15 15:49:27 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:49:27] "GET /socket.io/?EIO=4&transport=polling&t=PToa9Mp&sid=_Ak5_OtuxlmWhpUJAAAS HTTP/1.1" 200 -
+2025-06-15 15:49:29 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:49:29] "GET /socket.io/?EIO=4&transport=websocket&sid=_Ak5_OtuxlmWhpUJAAAS HTTP/1.1" 200 -
+2025-06-15 15:49:31 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:49:31] "GET /socket.io/?EIO=4&transport=polling&t=PToaAKi HTTP/1.1" 200 -
+2025-06-15 15:49:31 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:49:31] "POST /socket.io/?EIO=4&transport=polling&t=PToaAKu&sid=jg8xn23yR8zfHBLvAAAU HTTP/1.1" 200 -
+2025-06-15 15:49:31 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:49:31] "GET /socket.io/?EIO=4&transport=polling&t=PToaAKv&sid=jg8xn23yR8zfHBLvAAAU HTTP/1.1" 200 -
+2025-06-15 15:49:39 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:49:39] "GET /socket.io/?EIO=4&transport=websocket&sid=jg8xn23yR8zfHBLvAAAU HTTP/1.1" 200 -
+2025-06-15 15:49:40 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:49:40] "GET /socket.io/?EIO=4&transport=polling&t=PToaCVH HTTP/1.1" 200 -
+2025-06-15 15:49:40 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:49:40] "POST /socket.io/?EIO=4&transport=polling&t=PToaCVT&sid=3qqLkKy5zwQc0f1SAAAW HTTP/1.1" 200 -
+2025-06-15 15:49:40 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:49:40] "GET /socket.io/?EIO=4&transport=polling&t=PToaCVU&sid=3qqLkKy5zwQc0f1SAAAW HTTP/1.1" 200 -
+2025-06-15 15:49:51 | DEBUG    | human_ai_game:423 | AI狼人3(玩家4) -> 5
+2025-06-15 15:49:57 | DEBUG    | __main__:772 | --- 预言家行动已收集 ---
+2025-06-15 15:49:57 | DEBUG    | __main__:777 | 预言家1  查验 2
+2025-06-15 15:49:58 | DEBUG    | __main__:796 | 执行环境.step, 夜晚行动: {'0': 1, '3': array([5]), '1': array([2]), '2': 6, '4': 6, '5': 6}
+2025-06-15 15:49:58 | DEBUG    | __main__:798 | 环境.step 完成, 存活: [0, 1, 2, 3, 4]
+2025-06-15 15:49:58 | DEBUG    | __main__:805 | 检查最近5个事件
+2025-06-15 15:49:58 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 1, 'target': 2, 'role': 1, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 15:49:58 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 5, 'alive': [0, 1, 2, 3, 4]}
+2025-06-15 15:50:05 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=0
+2025-06-15 15:50:13 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=1
+2025-06-15 15:50:14 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=2
+2025-06-15 15:50:15 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=3
+2025-06-15 15:50:15 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=4
+2025-06-15 15:50:20 | DEBUG    | __main__:1109 | --- 投票动作 ---
+2025-06-15 15:50:20 | DEBUG    | __main__:1111 | 玩家0  → 1
+2025-06-15 15:50:20 | DEBUG    | __main__:1111 | 玩家1  → 0
+2025-06-15 15:50:20 | DEBUG    | __main__:1111 | 玩家2  → 0
+2025-06-15 15:50:20 | DEBUG    | __main__:1111 | 玩家3  → 1
+2025-06-15 15:50:20 | DEBUG    | __main__:1111 | 玩家4  → 0
+2025-06-15 15:50:20 | DEBUG    | __main__:1117 | 票数统计: [3, 2, 0, 0, 0, 0]
+2025-06-15 15:50:44 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:50:44] "GET /socket.io/?EIO=4&transport=websocket&sid=3qqLkKy5zwQc0f1SAAAW HTTP/1.1" 200 -
+2025-06-15 15:50:46 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:50:46] "GET /socket.io/?EIO=4&transport=polling&t=PToaScd HTTP/1.1" 200 -
+2025-06-15 15:50:46 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:50:46] "POST /socket.io/?EIO=4&transport=polling&t=PToaSco&sid=mE7G42Jb8M2_jvYUAAAY HTTP/1.1" 200 -
+2025-06-15 15:50:46 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 15:50:46] "GET /socket.io/?EIO=4&transport=polling&t=PToaScp&sid=mE7G42Jb8M2_jvYUAAAY HTTP/1.1" 200 -
+2025-06-15 16:43:19 | INFO     | werkzeug:97 | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 16:43:19 | INFO     | werkzeug:97 | [33mPress CTRL+C to quit[0m
+2025-06-15 16:43:19 | INFO     | werkzeug:97 |  * Restarting with stat
+2025-06-15 16:43:21 | WARNING  | werkzeug:97 |  * Debugger is active!
+2025-06-15 16:43:21 | INFO     | werkzeug:97 |  * Debugger PIN: 140-156-874
+2025-06-15 16:43:21 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:43:21] "GET / HTTP/1.1" 200 -
+2025-06-15 16:43:23 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:43:23] "GET /socket.io/?EIO=4&transport=polling&t=PTomVMY HTTP/1.1" 200 -
+2025-06-15 16:43:23 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:43:23] "POST /socket.io/?EIO=4&transport=polling&t=PTomVMl&sid=juMCfbG3Qr_qO-mHAAAA HTTP/1.1" 200 -
+2025-06-15 16:43:23 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:43:23] "GET /socket.io/?EIO=4&transport=polling&t=PTomVMm&sid=juMCfbG3Qr_qO-mHAAAA HTTP/1.1" 200 -
+2025-06-15 16:43:26 | DEBUG    | __main__:772 | --- 预言家行动已收集 ---
+2025-06-15 16:43:26 | DEBUG    | __main__:777 | 预言家0  查验 2
+2025-06-15 16:43:26 | DEBUG    | __main__:796 | 执行环境.step, 夜晚行动: {'3': array([1]), '4': array([2]), '0': array([2]), '1': 6, '2': 6, '5': 6}
+2025-06-15 16:43:26 | DEBUG    | __main__:798 | 环境.step 完成, 存活: [0, 1, 3, 4, 5]
+2025-06-15 16:43:26 | DEBUG    | __main__:805 | 检查最近5个事件
+2025-06-15 16:43:26 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 0, 'target': 2, 'role': 1, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 16:43:26 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 2, 'alive': [0, 1, 3, 4, 5]}
+2025-06-15 16:43:27 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=0
+2025-06-15 16:43:28 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=1
+2025-06-15 16:43:28 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=3
+2025-06-15 16:43:29 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=4
+2025-06-15 16:43:58 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:43:58] "GET /socket.io/?EIO=4&transport=websocket&sid=juMCfbG3Qr_qO-mHAAAA HTTP/1.1" 200 -
+2025-06-15 16:44:15 | INFO     | werkzeug:97 |  * Detected change in 'c:\\Users\\17536\\OneDrive\\Desktop\\werewolf\\code0615\\webapp\\human_ai_game.py', reloading
+2025-06-15 16:44:15 | INFO     | werkzeug:97 |  * Restarting with stat
+2025-06-15 16:44:17 | WARNING  | werkzeug:97 |  * Debugger is active!
+2025-06-15 16:44:17 | INFO     | werkzeug:97 |  * Debugger PIN: 140-156-874
+2025-06-15 16:44:31 | INFO     | werkzeug:97 | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 16:44:31 | INFO     | werkzeug:97 | [33mPress CTRL+C to quit[0m
+2025-06-15 16:44:31 | INFO     | werkzeug:97 |  * Restarting with stat
+2025-06-15 16:44:33 | WARNING  | werkzeug:97 |  * Debugger is active!
+2025-06-15 16:44:33 | INFO     | werkzeug:97 |  * Debugger PIN: 140-156-874
+2025-06-15 16:44:33 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:33] "GET / HTTP/1.1" 200 -
+2025-06-15 16:44:35 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:35] "GET /socket.io/?EIO=4&transport=polling&t=PTomn2J HTTP/1.1" 200 -
+2025-06-15 16:44:35 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:35] "POST /socket.io/?EIO=4&transport=polling&t=PTomn2W&sid=vSgYC0VZS-owy3jhAAAA HTTP/1.1" 200 -
+2025-06-15 16:44:35 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:35] "GET /socket.io/?EIO=4&transport=polling&t=PTomn2Y&sid=vSgYC0VZS-owy3jhAAAA HTTP/1.1" 200 -
+2025-06-15 16:44:38 | DEBUG    | __main__:772 | --- 预言家行动已收集 ---
+2025-06-15 16:44:38 | DEBUG    | __main__:777 | 预言家4  查验 5
+2025-06-15 16:44:38 | DEBUG    | __main__:796 | 执行环境.step, 夜晚行动: {'0': array([4]), '3': array([2]), '1': 6, '2': 6, '4': array([5]), '5': 6}
+2025-06-15 16:44:38 | DEBUG    | __main__:798 | 环境.step 完成, 存活: [0, 1, 2, 3, 5]
+2025-06-15 16:44:38 | DEBUG    | __main__:805 | 检查最近5个事件
+2025-06-15 16:44:38 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 4, 'target': 5, 'role': 1, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 16:44:38 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 4, 'alive': [0, 1, 2, 3, 5]}
+2025-06-15 16:44:39 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=0
+2025-06-15 16:44:42 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=1
+2025-06-15 16:44:43 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:43] "GET /socket.io/?EIO=4&transport=websocket&sid=vSgYC0VZS-owy3jhAAAA HTTP/1.1" 200 -
+2025-06-15 16:44:45 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:45] "GET /socket.io/?EIO=4&transport=polling&t=PTompKh HTTP/1.1" 200 -
+2025-06-15 16:44:45 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:45] "POST /socket.io/?EIO=4&transport=polling&t=PTompKs&sid=Fsprz0OAfMGoSR19AAAC HTTP/1.1" 200 -
+2025-06-15 16:44:45 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:45] "GET /socket.io/?EIO=4&transport=polling&t=PTompKt&sid=Fsprz0OAfMGoSR19AAAC HTTP/1.1" 200 -
+2025-06-15 16:44:47 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:47] "GET /socket.io/?EIO=4&transport=websocket&sid=Fsprz0OAfMGoSR19AAAC HTTP/1.1" 200 -
+2025-06-15 16:44:48 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:48] "GET /socket.io/?EIO=4&transport=polling&t=PTomq4o HTTP/1.1" 200 -
+2025-06-15 16:44:48 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:48] "POST /socket.io/?EIO=4&transport=polling&t=PTomq4z&sid=U3Dcoh8ZBsZUEi5IAAAE HTTP/1.1" 200 -
+2025-06-15 16:44:48 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:48] "GET /socket.io/?EIO=4&transport=polling&t=PTomq4-&sid=U3Dcoh8ZBsZUEi5IAAAE HTTP/1.1" 200 -
+2025-06-15 16:44:48 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:48] "GET /socket.io/?EIO=4&transport=polling&t=PTomq5v&sid=U3Dcoh8ZBsZUEi5IAAAE HTTP/1.1" 200 -
+2025-06-15 16:44:50 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:50] "GET /socket.io/?EIO=4&transport=websocket&sid=U3Dcoh8ZBsZUEi5IAAAE HTTP/1.1" 200 -
+2025-06-15 16:44:51 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:51] "GET /socket.io/?EIO=4&transport=polling&t=PTomq-7 HTTP/1.1" 200 -
+2025-06-15 16:44:52 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:52] "POST /socket.io/?EIO=4&transport=polling&t=PTomq-I&sid=BJrKNCK7200G-N5JAAAG HTTP/1.1" 200 -
+2025-06-15 16:44:52 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:44:52] "GET /socket.io/?EIO=4&transport=polling&t=PTomq-J&sid=BJrKNCK7200G-N5JAAAG HTTP/1.1" 200 -
+2025-06-15 16:44:55 | DEBUG    | human_ai_game:554 | AI狼人3(玩家4) -> 1
+2025-06-15 16:44:57 | DEBUG    | __main__:772 | --- 预言家行动已收集 ---
+2025-06-15 16:44:57 | DEBUG    | __main__:777 | 预言家1  查验 3
+2025-06-15 16:44:58 | DEBUG    | __main__:796 | 执行环境.step, 夜晚行动: {'0': 1, '3': array([1]), '1': array([3]), '2': 6, '4': 6, '5': 6}
+2025-06-15 16:44:58 | DEBUG    | __main__:798 | 环境.step 完成, 存活: [0, 2, 3, 4, 5]
+2025-06-15 16:44:58 | DEBUG    | __main__:805 | 检查最近5个事件
+2025-06-15 16:44:58 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 1, 'target': 3, 'role': 0, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 16:44:58 | DEBUG    | __main__:807 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 1, 'alive': [0, 2, 3, 4, 5]}
+2025-06-15 16:44:59 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=0
+2025-06-15 16:45:01 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=2
+2025-06-15 16:45:02 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=3
+2025-06-15 16:45:03 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=4
+2025-06-15 16:45:04 | DEBUG    | __main__:985 | 发言阶段开始: day=1, current_speaker=5
+2025-06-15 16:45:12 | DEBUG    | __main__:1109 | --- 投票动作 ---
+2025-06-15 16:45:12 | DEBUG    | __main__:1111 | 玩家0  → 5
+2025-06-15 16:45:12 | DEBUG    | __main__:1111 | 玩家2  → 3
+2025-06-15 16:45:12 | DEBUG    | __main__:1111 | 玩家3  → 2
+2025-06-15 16:45:12 | DEBUG    | __main__:1111 | 玩家4  → 3
+2025-06-15 16:45:12 | DEBUG    | __main__:1111 | 玩家5  → 3
+2025-06-15 16:45:12 | DEBUG    | __main__:1117 | 票数统计: [0, 0, 1, 3, 0, 1]
+2025-06-15 16:46:28 | INFO     | werkzeug:97 |  * Detected change in 'c:\\Users\\17536\\OneDrive\\Desktop\\werewolf\\code0615\\webapp\\app.py', reloading
+2025-06-15 16:46:29 | INFO     | werkzeug:97 |  * Restarting with stat
+2025-06-15 16:47:28 | INFO     | werkzeug:97 | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 16:47:28 | INFO     | werkzeug:97 | [33mPress CTRL+C to quit[0m
+2025-06-15 16:47:28 | INFO     | werkzeug:97 |  * Restarting with stat
+2025-06-15 16:47:30 | WARNING  | werkzeug:97 |  * Debugger is active!
+2025-06-15 16:47:30 | INFO     | werkzeug:97 |  * Debugger PIN: 140-156-874
+2025-06-15 16:47:30 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:47:30] "GET /socket.io/?EIO=4&transport=polling&t=PTonRkT HTTP/1.1" 200 -
+2025-06-15 16:47:30 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:47:30] "GET /socket.io/?EIO=4&transport=polling&t=PTonRmI&sid=-9IEf6a6u-ESTwd1AAAA HTTP/1.1" 200 -
+2025-06-15 16:47:30 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:47:30] "POST /socket.io/?EIO=4&transport=polling&t=PTonRmG&sid=-9IEf6a6u-ESTwd1AAAA HTTP/1.1" 200 -
+2025-06-15 16:47:30 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:47:30] "GET /socket.io/?EIO=4&transport=polling&t=PTonRmX&sid=-9IEf6a6u-ESTwd1AAAA HTTP/1.1" 200 -
+2025-06-15 16:47:38 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:47:38] "GET /socket.io/?EIO=4&transport=websocket&sid=-9IEf6a6u-ESTwd1AAAA HTTP/1.1" 200 -
+2025-06-15 16:47:40 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:47:40] "GET /socket.io/?EIO=4&transport=polling&t=PTonU27 HTTP/1.1" 200 -
+2025-06-15 16:47:40 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:47:40] "POST /socket.io/?EIO=4&transport=polling&t=PTonU2I&sid=vUxbs5NGw62Ff7EsAAAC HTTP/1.1" 200 -
+2025-06-15 16:47:40 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:47:40] "GET /socket.io/?EIO=4&transport=polling&t=PTonU2J&sid=vUxbs5NGw62Ff7EsAAAC HTTP/1.1" 200 -
+2025-06-15 16:47:42 | DEBUG    | __main__:780 | --- 预言家行动已收集 ---
+2025-06-15 16:47:42 | DEBUG    | __main__:785 | 预言家3  查验 0
+2025-06-15 16:47:43 | DEBUG    | __main__:804 | 执行环境.step, 夜晚行动: {'2': array([3]), '5': array([0]), '0': 6, '1': 6, '3': array([0]), '4': 6}
+2025-06-15 16:47:43 | DEBUG    | __main__:806 | 环境.step 完成, 存活: [0, 1, 2, 4, 5]
+2025-06-15 16:47:43 | DEBUG    | __main__:813 | 检查最近5个事件
+2025-06-15 16:47:43 | DEBUG    | __main__:815 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 3, 'target': 0, 'role': 1, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 16:47:43 | DEBUG    | __main__:815 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 3, 'alive': [0, 1, 2, 4, 5]}
+2025-06-15 16:47:43 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=0
+2025-06-15 16:47:44 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=1
+2025-06-15 16:47:44 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=2
+2025-06-15 16:47:45 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=4
+2025-06-15 16:47:45 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=5
+2025-06-15 16:47:46 | DEBUG    | __main__:1117 | --- 投票动作 ---
+2025-06-15 16:47:46 | DEBUG    | __main__:1119 | 玩家0  → 1
+2025-06-15 16:47:46 | DEBUG    | __main__:1119 | 玩家1  → 2
+2025-06-15 16:47:46 | DEBUG    | __main__:1119 | 玩家2  → 0
+2025-06-15 16:47:46 | DEBUG    | __main__:1119 | 玩家4  → 1
+2025-06-15 16:47:46 | DEBUG    | __main__:1119 | 玩家5  → 0
+2025-06-15 16:47:46 | DEBUG    | __main__:1125 | 票数统计: [2, 2, 1, 0, 0, 0]
+2025-06-15 16:47:47 | DEBUG    | __main__:780 | --- 预言家行动已收集 ---
+2025-06-15 16:47:48 | DEBUG    | __main__:804 | 执行环境.step, 夜晚行动: {'2': array([1]), '5': array([1]), '0': 6, '1': 6, '4': 6}
+2025-06-15 16:47:48 | DEBUG    | __main__:806 | 环境.step 完成, 存活: [0, 2, 4, 5]
+2025-06-15 16:47:48 | DEBUG    | __main__:813 | 检查最近5个事件
+2025-06-15 16:47:48 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'talk', 'speaker': 2, 'type': 0, 'target': -1, 'alive': [0, 1, 2, 4, 5]}
+2025-06-15 16:47:48 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'talk', 'speaker': 4, 'type': 0, 'target': -1, 'alive': [0, 1, 2, 4, 5]}
+2025-06-15 16:47:48 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'talk', 'speaker': 5, 'type': 0, 'target': -1, 'alive': [0, 1, 2, 4, 5]}
+2025-06-15 16:47:48 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'vote', 'out': -1, 'votes': [2, 2, 1, 0, 0, 0], 'alive': [0, 1, 2, 4, 5]}
+2025-06-15 16:47:48 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'night', 'victim': 1, 'alive': [0, 2, 4, 5]}
+2025-06-15 16:47:48 | DEBUG    | __main__:993 | 发言阶段开始: day=2, current_speaker=0
+2025-06-15 16:47:49 | DEBUG    | __main__:993 | 发言阶段开始: day=2, current_speaker=2
+2025-06-15 16:47:49 | DEBUG    | __main__:993 | 发言阶段开始: day=2, current_speaker=4
+2025-06-15 16:47:50 | DEBUG    | __main__:993 | 发言阶段开始: day=2, current_speaker=5
+2025-06-15 16:47:51 | DEBUG    | __main__:1117 | --- 投票动作 ---
+2025-06-15 16:47:51 | DEBUG    | __main__:1119 | 玩家0  → 2
+2025-06-15 16:47:51 | DEBUG    | __main__:1119 | 玩家2  → 0
+2025-06-15 16:47:51 | DEBUG    | __main__:1119 | 玩家4  → 2
+2025-06-15 16:47:51 | DEBUG    | __main__:1119 | 玩家5  → 0
+2025-06-15 16:47:51 | DEBUG    | __main__:1125 | 票数统计: [2, 0, 2, 0, 0, 0]
+2025-06-15 16:47:53 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:47:53] "GET /socket.io/?EIO=4&transport=websocket&sid=vUxbs5NGw62Ff7EsAAAC HTTP/1.1" 200 -
+2025-06-15 16:48:06 | INFO     | werkzeug:97 | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 16:48:06 | INFO     | werkzeug:97 | [33mPress CTRL+C to quit[0m
+2025-06-15 16:48:06 | INFO     | werkzeug:97 |  * Restarting with stat
+2025-06-15 16:48:08 | WARNING  | werkzeug:97 |  * Debugger is active!
+2025-06-15 16:48:08 | INFO     | werkzeug:97 |  * Debugger PIN: 140-156-874
+2025-06-15 16:48:09 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:48:09] "GET / HTTP/1.1" 200 -
+2025-06-15 16:48:12 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:48:12] "GET /socket.io/?EIO=4&transport=polling&t=PTonbuk HTTP/1.1" 200 -
+2025-06-15 16:48:12 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:48:12] "POST /socket.io/?EIO=4&transport=polling&t=PTonbuv&sid=6T6aazfk4CGVuUDlAAAA HTTP/1.1" 200 -
+2025-06-15 16:48:12 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:48:12] "GET /socket.io/?EIO=4&transport=polling&t=PTonbux&sid=6T6aazfk4CGVuUDlAAAA HTTP/1.1" 200 -
+2025-06-15 16:48:12 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:48:12] "GET /socket.io/?EIO=4&transport=polling&t=PTonbvv&sid=6T6aazfk4CGVuUDlAAAA HTTP/1.1" 200 -
+2025-06-15 16:48:14 | DEBUG    | __main__:780 | --- 预言家行动已收集 ---
+2025-06-15 16:48:14 | DEBUG    | __main__:785 | 预言家3  查验 4
+2025-06-15 16:48:15 | DEBUG    | __main__:804 | 执行环境.step, 夜晚行动: {'0': array([1]), '4': array([5]), '1': 6, '2': 6, '3': array([4]), '5': 6}
+2025-06-15 16:48:15 | DEBUG    | __main__:806 | 环境.step 完成, 存活: [0, 1, 2, 3, 4]
+2025-06-15 16:48:15 | DEBUG    | __main__:813 | 检查最近5个事件
+2025-06-15 16:48:15 | DEBUG    | __main__:815 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 3, 'target': 4, 'role': 0, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 16:48:15 | DEBUG    | __main__:815 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 5, 'alive': [0, 1, 2, 3, 4]}
+2025-06-15 16:48:15 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=0
+2025-06-15 16:48:16 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=1
+2025-06-15 16:48:17 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=2
+2025-06-15 16:48:17 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=3
+2025-06-15 16:48:18 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=4
+2025-06-15 16:48:19 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:48:19] "GET /socket.io/?EIO=4&transport=websocket&sid=6T6aazfk4CGVuUDlAAAA HTTP/1.1" 200 -
+2025-06-15 16:48:21 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:48:21] "GET /socket.io/?EIO=4&transport=polling&t=PToneEH HTTP/1.1" 200 -
+2025-06-15 16:48:21 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:48:21] "POST /socket.io/?EIO=4&transport=polling&t=PToneET&sid=bZ7UovNyw8ISh7x7AAAC HTTP/1.1" 200 -
+2025-06-15 16:48:21 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:48:21] "GET /socket.io/?EIO=4&transport=polling&t=PToneEU&sid=bZ7UovNyw8ISh7x7AAAC HTTP/1.1" 200 -
+2025-06-15 16:48:25 | DEBUG    | human_ai_game:554 | AI狼人4(玩家5) -> 5
+2025-06-15 16:48:27 | DEBUG    | __main__:780 | --- 预言家行动已收集 ---
+2025-06-15 16:48:27 | DEBUG    | __main__:785 | 预言家5  查验 0
+2025-06-15 16:48:27 | DEBUG    | __main__:804 | 执行环境.step, 夜晚行动: {'0': 5, '4': array([5]), '1': 6, '2': 6, '3': 6, '5': array([0])}
+2025-06-15 16:48:27 | DEBUG    | __main__:806 | 环境.step 完成, 存活: [0, 1, 2, 3, 4]
+2025-06-15 16:48:27 | DEBUG    | __main__:813 | 检查最近5个事件
+2025-06-15 16:48:27 | DEBUG    | __main__:815 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 5, 'target': 0, 'role': 0, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 16:48:27 | DEBUG    | __main__:815 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 5, 'alive': [0, 1, 2, 3, 4]}
+2025-06-15 16:48:28 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=0
+2025-06-15 16:48:31 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=1
+2025-06-15 16:48:33 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=2
+2025-06-15 16:48:34 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=3
+2025-06-15 16:48:35 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=4
+2025-06-15 16:48:45 | DEBUG    | __main__:1117 | --- 投票动作 ---
+2025-06-15 16:48:45 | DEBUG    | __main__:1119 | 玩家0  → 4
+2025-06-15 16:48:45 | DEBUG    | __main__:1119 | 玩家1  → 0
+2025-06-15 16:48:45 | DEBUG    | __main__:1119 | 玩家2  → 0
+2025-06-15 16:48:45 | DEBUG    | __main__:1119 | 玩家3  → 0
+2025-06-15 16:48:45 | DEBUG    | __main__:1119 | 玩家4  → 1
+2025-06-15 16:48:45 | DEBUG    | __main__:1125 | 票数统计: [3, 1, 0, 0, 1, 0]
+2025-06-15 16:48:57 | DEBUG    | __main__:780 | --- 预言家行动已收集 ---
+2025-06-15 16:48:58 | DEBUG    | __main__:804 | 执行环境.step, 夜晚行动: {'4': array([1]), '1': 6, '2': 6, '3': 6}
+2025-06-15 16:48:58 | DEBUG    | __main__:806 | 环境.step 完成, 存活: [2, 3, 4]
+2025-06-15 16:48:58 | DEBUG    | __main__:813 | 检查最近5个事件
+2025-06-15 16:48:58 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'talk', 'speaker': 3, 'type': 1, 'target': 0, 'role': None, 'alive': [0, 1, 2, 3, 4]}
+2025-06-15 16:48:58 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'talk', 'speaker': 4, 'type': 0, 'target': -1, 'alive': [0, 1, 2, 3, 4]}
+2025-06-15 16:48:58 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'vote', 'voter': 0, 'target': 4, 'alive': [0, 1, 2, 3, 4]}
+2025-06-15 16:48:58 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'vote', 'out': 0, 'votes': [3, 1, 0, 0, 1, 0], 'alive': [1, 2, 3, 4]}
+2025-06-15 16:48:58 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'night', 'victim': 1, 'alive': [2, 3, 4]}
+2025-06-15 16:48:59 | DEBUG    | __main__:993 | 发言阶段开始: day=2, current_speaker=0
+2025-06-15 16:49:38 | DEBUG    | __main__:993 | 发言阶段开始: day=2, current_speaker=2
+2025-06-15 16:49:40 | DEBUG    | __main__:993 | 发言阶段开始: day=2, current_speaker=3
+2025-06-15 16:49:41 | DEBUG    | __main__:993 | 发言阶段开始: day=2, current_speaker=4
+2025-06-15 16:49:41 | DEBUG    | __main__:1117 | --- 投票动作 ---
+2025-06-15 16:49:41 | DEBUG    | __main__:1119 | 玩家2  → 3
+2025-06-15 16:49:41 | DEBUG    | __main__:1119 | 玩家3  → 2
+2025-06-15 16:49:41 | DEBUG    | __main__:1119 | 玩家4  → 2
+2025-06-15 16:49:41 | DEBUG    | __main__:1125 | 票数统计: [0, 0, 2, 1, 0, 0]
+2025-06-15 16:49:44 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:49:44] "GET /socket.io/?EIO=4&transport=websocket&sid=bZ7UovNyw8ISh7x7AAAC HTTP/1.1" 200 -
+2025-06-15 16:53:13 | INFO     | werkzeug:97 | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 16:53:13 | INFO     | werkzeug:97 | [33mPress CTRL+C to quit[0m
+2025-06-15 16:53:13 | INFO     | werkzeug:97 |  * Restarting with stat
+2025-06-15 16:53:16 | WARNING  | werkzeug:97 |  * Debugger is active!
+2025-06-15 16:53:16 | INFO     | werkzeug:97 |  * Debugger PIN: 140-156-874
+2025-06-15 16:53:16 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:53:16] "GET / HTTP/1.1" 200 -
+2025-06-15 16:53:21 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:53:21] "GET /socket.io/?EIO=4&transport=polling&t=PToonIF HTTP/1.1" 200 -
+2025-06-15 16:53:21 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:53:21] "POST /socket.io/?EIO=4&transport=polling&t=PToonIS&sid=ieVnFNOV3jcl5Mp-AAAA HTTP/1.1" 200 -
+2025-06-15 16:53:21 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:53:21] "GET /socket.io/?EIO=4&transport=polling&t=PToonIU&sid=ieVnFNOV3jcl5Mp-AAAA HTTP/1.1" 200 -
+2025-06-15 16:53:27 | DEBUG    | human_ai_game:554 | AI狼人1(玩家2) -> 3
+2025-06-15 16:53:30 | DEBUG    | __main__:780 | --- 预言家行动已收集 ---
+2025-06-15 16:53:30 | DEBUG    | __main__:785 | 预言家4  查验 1
+2025-06-15 16:53:32 | DEBUG    | __main__:804 | 执行环境.step, 夜晚行动: {'0': 4, '1': array([3]), '2': 6, '3': 6, '4': array([1]), '5': 6}
+2025-06-15 16:53:32 | DEBUG    | __main__:806 | 环境.step 完成, 存活: [0, 1, 2, 3, 5]
+2025-06-15 16:53:32 | DEBUG    | __main__:813 | 检查最近5个事件
+2025-06-15 16:53:32 | DEBUG    | __main__:815 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 4, 'target': 1, 'role': 0, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 16:53:32 | DEBUG    | __main__:815 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 4, 'alive': [0, 1, 2, 3, 5]}
+2025-06-15 16:53:33 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=0
+2025-06-15 16:53:35 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=1
+2025-06-15 16:53:38 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=2
+2025-06-15 16:53:53 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=3
+2025-06-15 16:53:54 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=5
+2025-06-15 16:53:57 | DEBUG    | __main__:1117 | --- 投票动作 ---
+2025-06-15 16:53:57 | DEBUG    | __main__:1119 | 玩家0  → 1
+2025-06-15 16:53:57 | DEBUG    | __main__:1119 | 玩家1  → 2
+2025-06-15 16:53:57 | DEBUG    | __main__:1119 | 玩家2  → 1
+2025-06-15 16:53:57 | DEBUG    | __main__:1119 | 玩家3  → 1
+2025-06-15 16:53:57 | DEBUG    | __main__:1119 | 玩家5  → 1
+2025-06-15 16:53:57 | DEBUG    | __main__:1125 | 票数统计: [0, 4, 1, 0, 0, 0]
+2025-06-15 16:54:05 | DEBUG    | __main__:780 | --- 预言家行动已收集 ---
+2025-06-15 16:54:05 | DEBUG    | __main__:804 | 执行环境.step, 夜晚行动: {'0': 2, '2': 6, '3': 6, '5': 6}
+2025-06-15 16:54:05 | DEBUG    | __main__:806 | 环境.step 完成, 存活: [0, 3, 5]
+2025-06-15 16:54:05 | DEBUG    | __main__:813 | 检查最近5个事件
+2025-06-15 16:54:05 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'talk', 'speaker': 3, 'type': 1, 'target': 1, 'role': None, 'alive': [0, 1, 2, 3, 5]}
+2025-06-15 16:54:05 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'talk', 'speaker': 5, 'type': 1, 'target': 1, 'role': None, 'alive': [0, 1, 2, 3, 5]}
+2025-06-15 16:54:05 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'vote', 'voter': 0, 'target': 1, 'alive': [0, 1, 2, 3, 5]}
+2025-06-15 16:54:05 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'vote', 'out': 1, 'votes': [0, 4, 1, 0, 0, 0], 'alive': [0, 2, 3, 5]}
+2025-06-15 16:54:05 | DEBUG    | __main__:815 | 事件内容: {'day': 1, 'phase': 'night', 'victim': 2, 'alive': [0, 3, 5]}
+2025-06-15 16:54:07 | DEBUG    | __main__:993 | 发言阶段开始: day=2, current_speaker=0
+2025-06-15 16:54:14 | DEBUG    | __main__:993 | 发言阶段开始: day=2, current_speaker=3
+2025-06-15 16:54:15 | DEBUG    | __main__:993 | 发言阶段开始: day=2, current_speaker=5
+2025-06-15 16:54:23 | DEBUG    | __main__:1117 | --- 投票动作 ---
+2025-06-15 16:54:23 | DEBUG    | __main__:1119 | 玩家0  → 3
+2025-06-15 16:54:23 | DEBUG    | __main__:1119 | 玩家3  → 0
+2025-06-15 16:54:23 | DEBUG    | __main__:1119 | 玩家5  → 0
+2025-06-15 16:54:23 | DEBUG    | __main__:1125 | 票数统计: [2, 0, 0, 1, 0, 0]
+2025-06-15 16:54:27 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 16:54:27] "GET /socket.io/?EIO=4&transport=websocket&sid=ieVnFNOV3jcl5Mp-AAAA HTTP/1.1" 200 -
+2025-06-15 17:15:13 | INFO     | werkzeug:97 | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-15 17:15:13 | INFO     | werkzeug:97 | [33mPress CTRL+C to quit[0m
+2025-06-15 17:15:13 | INFO     | werkzeug:97 |  * Restarting with stat
+2025-06-15 17:15:15 | WARNING  | werkzeug:97 |  * Debugger is active!
+2025-06-15 17:15:15 | INFO     | werkzeug:97 |  * Debugger PIN: 140-156-874
+2025-06-15 17:15:15 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 17:15:15] "GET / HTTP/1.1" 200 -
+2025-06-15 17:15:25 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 17:15:25] "GET /socket.io/?EIO=4&transport=polling&t=PTotqju HTTP/1.1" 200 -
+2025-06-15 17:15:25 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 17:15:25] "POST /socket.io/?EIO=4&transport=polling&t=PTotqk3&sid=3h-bxDywLyKnQ2t3AAAA HTTP/1.1" 200 -
+2025-06-15 17:15:26 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 17:15:26] "GET /socket.io/?EIO=4&transport=polling&t=PTotqk6&sid=3h-bxDywLyKnQ2t3AAAA HTTP/1.1" 200 -
+2025-06-15 17:15:26 | INFO     | werkzeug:97 | 127.0.0.1 - - [15/Jun/2025 17:15:26] "GET /socket.io/?EIO=4&transport=polling&t=PTotql5&sid=3h-bxDywLyKnQ2t3AAAA HTTP/1.1" 200 -
+2025-06-15 17:15:29 | DEBUG    | __main__:780 | --- 预言家行动已收集 ---
+2025-06-15 17:15:29 | DEBUG    | __main__:785 | 预言家4  查验 5
+2025-06-15 17:15:29 | DEBUG    | __main__:804 | 执行环境.step, 夜晚行动: {'2': array([1]), '3': array([1]), '0': 6, '1': 6, '4': array([5]), '5': 6}
+2025-06-15 17:15:29 | DEBUG    | __main__:806 | 环境.step 完成, 存活: [0, 2, 3, 4, 5]
+2025-06-15 17:15:29 | DEBUG    | __main__:813 | 检查最近5个事件
+2025-06-15 17:15:29 | DEBUG    | __main__:815 | 事件内容: {'day': 0, 'phase': 'seer_check', 'seer': 4, 'target': 5, 'role': 1, 'alive': [0, 1, 2, 3, 4, 5]}
+2025-06-15 17:15:29 | DEBUG    | __main__:815 | 事件内容: {'day': 0, 'phase': 'night', 'victim': 1, 'alive': [0, 2, 3, 4, 5]}
+2025-06-15 17:15:30 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=0
+2025-06-15 17:15:45 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=2
+2025-06-15 17:15:46 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=3
+2025-06-15 17:15:48 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=4
+2025-06-15 17:15:49 | DEBUG    | __main__:993 | 发言阶段开始: day=1, current_speaker=5
