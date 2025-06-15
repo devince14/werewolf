@@ -40,6 +40,7 @@ from flask_socketio import SocketIO, emit
 from werewolf_env.werewolf_env import WerewolfEnv, Role, TalkType
 from agents.belief_agent import BeliefAgent
 from utils.role_assigner import RoleAssigner
+from human_ai_game import HumanAIGameHandler
 import json
 import numpy as np
 
@@ -64,7 +65,7 @@ class GameState:
         self.players = {}  # {id: {"name": str, "role": Role}}
         self.num_players = 6  # 默认6人局
         self.num_wolves = 2   # 默认2狼
-        self.num_seers = 1
+        self.num_seers = 1  #默认1预言家   
         self.day = 0
         self.current_step = None
         self.current_speaker = 0  # 当前发言者
@@ -82,12 +83,17 @@ class GameState:
         self.legacy_speakers = []   # 需要留遗言的玩家列表
         self.current_legacy_speaker = 0  # 当前遗言发言者索引
         self.first_night_legacy_done = False  # 是否已经处理过第一夜的遗言
+        
+        # 人机对战相关
+        self.game_mode = 'ai'  # 'ai' 或 'human'
+        self.human_handler = None
+        self.human_vote_completed = False  # 人类玩家是否已完成投票
 
     def initialize_game(self):
         """初始化游戏环境和角色"""
         try:
             # 计算村民数量（不包括预言家）
-            num_villagers = self.num_players - self.num_wolves - self.num_seers  # 减1是因为有一个预言家
+            num_villagers = self.num_players - self.num_wolves - self.num_seers 
             # 使用 RoleAssigner 的静态方法分配角色
             roles = RoleAssigner.assign_roles(self.num_wolves, num_villagers)
             
@@ -148,6 +154,7 @@ class GameState:
     def enter_vote_phase(self):
         """进入投票阶段"""
         self.sync_state('vote')
+        self.human_vote_completed = False  # 重置人类投票完成标志
 
     def is_game_over(self):
         """检查游戏是否结束"""
@@ -158,7 +165,12 @@ class GameState:
         winner = self.env._check_win()
         if winner is None:
             return None
-        return "狼人" if winner == "WOLF" else "好人"
+        if winner == "WOLF":
+            return "狼人"
+        elif winner == "GOOD":
+            return "好人"
+        else:
+            return None
 
 def broadcast_host_message(message, phase=None):
     """广播主持人消息"""
@@ -180,6 +192,22 @@ def broadcast_beliefs():
                         'p_wolf': p_wolf if p_wolf is not None else [0] * game_state.num_players,
                         'p_seer': p_seer if p_seer is not None else [0] * game_state.num_players
                     }
+        
+        # 输出每个玩家的信念详情
+        if beliefs:
+            print(f"\n=== 信念更新 (模式: {game_state.game_mode}) ===")
+            for player_id in sorted(beliefs.keys()):
+                player_name = game_state.players[player_id]["name"]
+                player_role = game_state.players[player_id]["role"].name
+                p_wolf = beliefs[player_id]['p_wolf']
+                
+                print(f"{player_name}({player_role})的狼人信念:")
+                for target_id, wolf_prob in enumerate(p_wolf):
+                    if target_id != player_id:  # 不显示对自己的信念
+                        target_name = game_state.players[target_id]["name"]
+                        print(f"  → {target_name}: {wolf_prob:.3f}")
+            print("=" * 40 + "\n")
+            
         emit('update_beliefs', {'beliefs': beliefs}, broadcast=True)
     except Exception as e:
         print(f"Error broadcasting beliefs: {str(e)}")
@@ -197,25 +225,58 @@ def update_all_beliefs(events):
                 # 更新信念
                 agent.strategies['belief_update'].execute(game_state.env, events)
                 
-                # 归一化概率
-                if hasattr(agent, 'belief'):
-                    if hasattr(agent.belief, 'normalize'):
-                        agent.belief.normalize()
+                # 注释掉归一化
+                #if hasattr(agent, 'belief'):
+                #    if hasattr(agent.belief, 'normalize'):
+                #        agent.belief.normalize()
         broadcast_beliefs()
     except Exception as e:
         print(f"Error updating beliefs: {str(e)}")
         broadcast_host_message("信念更新出错")
 
-def broadcast_death(victim_id):
-    """广播死亡信息"""
+def broadcast_death(victim_id, death_cause="unknown"):
+    """广播死亡信息
+    
+    Args:
+        victim_id: 死者ID
+        death_cause: 死亡原因 ("night_kill" 夜晚被杀, "vote_out" 投票出局)
+    """
     if victim_id >= 0 and victim_id < game_state.num_players:
         victim = game_state.players[victim_id]
         game_state.death_record.append({
             "day": game_state.day,
             "victim": victim_id,
-            "role": victim["role"].name
+            "role": victim["role"].name,
+            "cause": death_cause
         })
-        broadcast_host_message(f"{victim['name']}（{victim['role'].name}）死亡", "death_announce")
+        
+        # 根据游戏模式决定是否显示角色
+        if game_state.game_mode == 'human':
+            # 临时调试：显示死者角色
+            broadcast_host_message(f"{victim['name']}（{victim['role'].name}）死亡 - {death_cause}", "death_announce")
+            
+            # 只有夜晚被杀的人类玩家才能留遗言，且是第一个夜晚被杀的人
+            if (game_state.human_handler and 
+                victim_id == game_state.human_handler.human_player_id and
+                death_cause == "night_kill" and
+                not game_state.legacy_spoken):  # 还没有人说过遗言
+                
+                # 检查是否是第一个夜晚被杀的人
+                is_first_night_death = True
+                for record in game_state.death_record[:-1]:  # 检查之前的死亡记录
+                    if record["cause"] == "night_kill":
+                        is_first_night_death = False
+                        break
+                
+                if is_first_night_death:
+                    broadcast_host_message(f"{victim['name']} 可以留下遗言", "last_words_request")
+                    game_state.legacy_spoken = True  # 标记已经有人说过遗言
+                    if hasattr(game_state.human_handler, 'handle_last_words_human'):
+                        if game_state.human_handler.handle_last_words_human():
+                            return  # 等待人类玩家选择遗言
+        else:
+            # AI模式：显示死者角色（观战模式）
+            broadcast_host_message(f"{victim['name']}（{victim['role'].name}）死亡", "death_announce")
 
 def broadcast_vote_results():
     """广播投票结果"""
@@ -252,7 +313,9 @@ def on_start_game(data):
         "num_wolves": 2,
         "assign_mode": "random" | "manual",
         "roles":  [0,1,2,1,0,1],      # 仅当 manual
-        "strategy": "belief" | "random"
+        "strategy": "belief" | "random",
+        "game_mode": "ai" | "human",
+        "human_player_id": 0
     }
     """
     try:
@@ -263,6 +326,8 @@ def on_start_game(data):
         assign_mode = data.get("assign_mode", "random")
         roles_list  = data.get("roles", [])
         strategy    = data.get("strategy", "belief")
+        game_mode   = data.get("game_mode", "ai")
+        human_player_id = int(data.get("human_player_id", 0))
 
         if not (4 <= num_players <= 12):
             emit("error", {"msg": "玩家人数必须 4-12"})
@@ -272,6 +337,7 @@ def on_start_game(data):
         game_state.num_players = num_players
         game_state.num_wolves  = num_wolves
         game_state.num_seers  = num_Seers
+        game_state.game_mode = game_mode
 
         # 2) 生成角色
         if assign_mode == "manual":
@@ -296,19 +362,39 @@ def on_start_game(data):
                 agent = BeliefAgent(i, num_players, roles[i])
             game_state.env.add_agent(agent)
 
-        # 4) 其余流程同之前……
+        # 初始化所有AI代理的信念
+        for i, agent in enumerate(game_state.env.agents):
+            if hasattr(agent, 'belief') and not hasattr(agent.belief, 'P_wolf'):
+                agent.belief.P_wolf = np.ones(num_players) / num_players
+                agent.belief.P_seer = np.ones(num_players) / num_players
+
+        # 4) 初始化人机对战处理器（如果是人机模式）
+        if game_mode == "human":
+            game_state.human_handler = HumanAIGameHandler(game_state)
+            game_state.human_handler.set_human_player(human_player_id)
+            # 修改人类玩家名称
+            game_state.players[human_player_id]["name"] = f"你（玩家{human_player_id+1}）"
+
+        # 5) 其余流程同之前……
         game_state.current_step = 'night'
         game_state.day = 1
         BeliefAgent.current_speaker = 0
 
-        emit('game_started', {
-            'players': [
-                {"id": pid, "name": p["name"], "role": p["role"].name, "beliefs": {}}
-                for pid, p in game_state.players.items()
-            ]
-        }, broadcast=True)
+        # 发送玩家信息
+        players_info = [
+            {"id": pid, "name": p["name"], "role": p["role"].name, "beliefs": {}}
+            for pid, p in game_state.players.items()
+        ]
 
+        emit('game_started', {
+            'players': players_info,
+            'game_mode': game_mode,
+            'human_player_id': human_player_id if game_mode == 'human' else None
+        }, broadcast=True)
+        
+        # 广播初始信念
         broadcast_beliefs()
+        
         game_state.enter_night_phase()
         broadcast_host_message(f"第 {game_state.day} 天开始", "day_start")
         broadcast_host_message("天黑请闭眼", "night")
@@ -326,18 +412,198 @@ def on_end_game():
     try:
         if not game_state.env:    # 尚未开始
             return
-        # 标记已结束，方便前端直接展示结果
-        winner = game_state.get_winner() or "未完成"
-        emit('game_over', {
-            "winner": winner,
-            "roles": {pid: pinfo["role"].name for pid, pinfo in game_state.players.items()}
-        }, broadcast=True)
-        # 简单重置
+            
+        if game_state.game_mode == 'ai':
+            # AI模式：继续运行游戏直到结束
+            broadcast_host_message("正在模拟游戏至结束...", "simulation")
+            
+            # 模拟游戏到结束
+            simulate_ai_game_to_end()
+            
+        else:
+            # 人机模式：直接显示游戏未完成
+            winner = "游戏未完成"
+            roles_info = {pid: pinfo["role"].name for pid, pinfo in game_state.players.items()}
+            
+            emit('game_over', {
+                "winner": winner,
+                "roles": roles_info,
+                "simulated": False
+            }, broadcast=True)
+        
+        # 重置游戏状态
         game_state.reset()
         print("[INFO] 游戏被手动终止")
+        
     except Exception:
         logging.exception("Error while ending game")
-# --------------------------------------
+
+def simulate_ai_game_to_end():
+    """专门用于AI模式的游戏自动模拟"""
+    max_iterations = 100  # 防止无限循环
+    iterations = 0
+    
+    # 临时禁用人机模式相关的等待逻辑
+    original_mode = game_state.game_mode
+    game_state.game_mode = 'ai'  # 临时设为AI模式
+    
+    try:
+        while not game_state.is_game_over() and iterations < max_iterations:
+            try:
+                # 执行自动化的游戏步骤
+                auto_next_step()
+                iterations += 1
+            except Exception as e:
+                log.error(f"游戏模拟出错: {e}")
+                break
+        
+        # 显示最终结果
+        winner = game_state.get_winner() or "未完成"
+        roles_info = {pid: pinfo["role"].name for pid, pinfo in game_state.players.items()}
+        
+        emit('game_over', {
+            "winner": winner,
+            "roles": roles_info,
+            "simulated": True
+        }, broadcast=True)
+        
+    finally:
+        # 恢复原始模式
+        game_state.game_mode = original_mode
+
+def auto_next_step():
+    """自动化的游戏步骤，不等待人类输入"""
+    if game_state.current_step == 'night':
+        auto_handle_night_phase()
+    elif game_state.current_step == 'talk':
+        auto_handle_talk_phase()
+    elif game_state.current_step == 'vote':
+        auto_handle_vote_phase()
+
+def auto_handle_night_phase():
+    """自动处理夜晚阶段"""
+    game_state.env.stage = "night"
+    
+    if game_state.sub_step is None:
+        game_state.sub_step = 'wolf_action'
+        
+    if game_state.sub_step == 'wolf_action' and not game_state.wolf_actions_collected:
+        # 收集所有狼人行动
+        for i in range(game_state.num_players):
+            if game_state.env.alive[i] and game_state.players[i]["role"] == Role.WOLF:
+                agent = game_state.env.agents[i]
+                action = agent.act(game_state.env)
+                game_state.night_actions[str(i)] = action
+        
+        game_state.wolf_actions_collected = True
+        game_state.sub_step = 'seer_action'
+        
+    elif game_state.sub_step == 'seer_action' and not game_state.seer_actions_collected:
+        # 收集所有预言家和村民行动
+        for i in range(game_state.num_players):
+            if game_state.env.alive[i]:
+                if game_state.players[i]["role"] == Role.SEER:
+                    agent = game_state.env.agents[i]
+                    action = agent.act(game_state.env)
+                    game_state.night_actions[str(i)] = action
+                elif game_state.players[i]["role"] == Role.VILLAGER:
+                    game_state.night_actions[str(i)] = game_state.env.N
+        
+        game_state.seer_actions_collected = True
+        game_state.sub_step = 'process_night'
+        
+    elif game_state.sub_step == 'process_night':
+        # 执行夜晚结果
+        actions = {str(k): v for k, v in game_state.night_actions.items()}
+        obs, rewards, terms, truncs, info = game_state.env.step(actions)
+        
+        # 重置夜晚状态
+        game_state.sub_step = None
+        game_state.wolf_actions_collected = False
+        game_state.seer_actions_collected = False
+        game_state.night_actions.clear()
+        
+        # 进入发言阶段
+        game_state.enter_talk_phase()
+
+def auto_handle_talk_phase():
+    """自动处理发言阶段"""
+    from agents.belief_agent import BeliefAgent
+    
+    if game_state.current_speaker < game_state.num_players:
+        if game_state.env.alive[game_state.current_speaker]:
+            # 让当前玩家发言
+            agent = game_state.env.agents[game_state.current_speaker]
+            action = agent.act(game_state.env)
+        
+        # 移动到下一个发言者
+        game_state.current_speaker += 1
+        BeliefAgent.current_speaker += 1
+        
+        # 跳过已死亡的玩家
+        while (game_state.current_speaker < game_state.num_players and 
+               not game_state.env.alive[game_state.current_speaker]):
+            game_state.current_speaker += 1
+            BeliefAgent.current_speaker += 1
+    
+    if game_state.current_speaker >= game_state.num_players:
+        # 进入投票阶段
+        game_state.enter_vote_phase()
+
+def auto_handle_vote_phase():
+    """自动处理投票阶段"""
+    actions = {}
+    game_state.vote_results = {}
+    
+    # 收集所有玩家投票
+    for i in range(game_state.num_players):
+        if game_state.env.alive[i]:
+            agent = game_state.env.agents[i]
+            action = agent.act(game_state.env)
+            act_int = int(action[0]) if isinstance(action, np.ndarray) else int(action)
+            actions[str(i)] = action
+            game_state.vote_results[i] = act_int
+    
+    # 执行投票结果
+    obs, rewards, terms, truncs, info = game_state.env.step(actions)
+    
+    # 检查游戏是否结束
+    if not game_state.is_game_over():
+        # 进入下一天夜晚
+        game_state.enter_night_phase()
+        game_state.day += 1
+
+@socketio.on('human_action')
+def on_human_action(data):
+    """处理人类玩家的行动"""
+    try:
+        if game_state.game_mode == 'human' and game_state.human_handler:
+            success = game_state.human_handler.process_human_action(data)
+            if not success:
+                emit('error', {'message': '行动处理失败'})
+        else:
+            emit('error', {'message': '当前不是人机对战模式'})
+    except Exception as e:
+        logging.exception("Error processing human action")
+        emit('error', {'message': '处理行动时出错'})
+
+@socketio.on('test_belief_broadcast')
+def on_test_belief_broadcast():
+    """测试信念广播功能"""
+    try:
+        print("[DEBUG] 收到信念广播测试请求")
+        logging.info("收到信念广播测试请求")
+        
+        # 强制广播当前信念状态
+        broadcast_beliefs()
+        
+        # 发送测试消息到前端
+        emit('test_response', {'message': '信念广播测试完成'}, broadcast=True)
+        
+    except Exception as e:
+        logging.exception("Error in test belief broadcast")
+        emit('error', {'message': '信念广播测试失败'})
+
 
 
 @socketio.on('next_step')
@@ -357,31 +623,97 @@ def on_next_step():
             elif game_state.sub_step == 'wolf_action' and not game_state.wolf_actions_collected:
                 # 收集狼人行动
                 try:
-                    log.debug("开始收集狼人行动")
-                    for i in range(game_state.num_players):
-                        if game_state.env.alive[i]:
-                            player_info = game_state.players[i]
-                            if player_info["role"] == Role.WOLF:
-                                agent = game_state.env.agents[i]
-                                action = agent.act(game_state.env)
-                                action_val = int(action[0]) if isinstance(action, np.ndarray) else int(action)
-                                game_state.night_actions[str(i)] = action
-                                
-                                log.debug("狼人%s(%s) -> %s", i, player_info["name"],
-                                            action_val if action_val < game_state.env.N else "无目标")
-
-                                
-                                if action_val < game_state.env.N:
-                                    target_name = game_state.players[action_val]["name"]
-                                    broadcast_host_message(f"狼人 {player_info['name']} 选择杀害 {target_name}", "wolf_turn")
-                                else:
-                                    broadcast_host_message(f"狼人 {player_info['name']} 选择不杀人", "wolf_turn")
                     
-                    log.debug("--- 狼人行动已收集 ---")
+                    # 检查是否有人类狼人需要行动
+                    if (game_state.game_mode == 'human' and 
+                        game_state.human_handler and 
+                        game_state.env.alive[game_state.human_handler.human_player_id] and
+                        game_state.players[game_state.human_handler.human_player_id]["role"] == Role.WOLF):
+                        # 人类狼人需要行动
+                        if game_state.human_handler.handle_night_phase_human():
+                            return  # 等待人类玩家操作
+                    
+                    # 处理AI狼人（只在非人机模式或人类不是狼人时立即处理）
+                    should_collect_ai_wolves_now = (
+                        game_state.game_mode != 'human' or  # AI模式
+                        not game_state.human_handler or    # 没有人类处理器
+                        not game_state.env.alive[game_state.human_handler.human_player_id] or  # 人类已死
+                        game_state.players[game_state.human_handler.human_player_id]["role"] != Role.WOLF  # 人类不是狼人
+                    )
+                    
+                    if should_collect_ai_wolves_now:
+                        for i in range(game_state.num_players):
+                            if game_state.env.alive[i]:
+                                player_info = game_state.players[i]
+                                if player_info["role"] == Role.WOLF:
+                                    agent = game_state.env.agents[i]
+                                    action = agent.act(game_state.env)
+                                    action_val = int(action[0]) if isinstance(action, np.ndarray) else int(action)
+                                    game_state.night_actions[str(i)] = action
+                                    
+                                    # AI模式下显示狼人行动
+                                    if game_state.game_mode != 'human':
+                                        if action_val < game_state.env.N:
+                                            target_name = game_state.players[action_val]["name"]
+                                            broadcast_host_message(f"狼人 {player_info['name']} 选择杀害 {target_name}", "wolf_turn")
+                                        else:
+                                            broadcast_host_message(f"狼人 {player_info['name']} 选择不杀人", "wolf_turn")
+                    
+                    # 收集所有狼人的目标选择
+                    wolf_targets = []
+                    wolf_choices = {}  # 记录每个狼人的选择
+                    
                     for wid, act in game_state.night_actions.items():
                         if game_state.players[int(wid)]["role"] == Role.WOLF:
                             tgt = int(act[0]) if isinstance(act, np.ndarray) else int(act)
-                            log.debug("狼人%-2s 刀向 %s", wid, tgt if tgt < game_state.env.N else "无目标")
+                            wolf_choices[int(wid)] = tgt
+                            if tgt < game_state.env.N:
+                                wolf_targets.append(tgt)
+                    
+                    # 在人机模式下，如果人类是狼人，显示狼人团队的选择汇总
+                    # 注意：这个逻辑只在AI狼人已经在上面被收集的情况下才会执行
+                    if (game_state.game_mode == 'human' and 
+                        game_state.human_handler and 
+                        game_state.env.alive[game_state.human_handler.human_player_id] and
+                        game_state.players[game_state.human_handler.human_player_id]["role"] == Role.WOLF and
+                        should_collect_ai_wolves_now):
+                        
+                        # 显示所有狼人的选择
+                        broadcast_host_message("=== 狼人团队选择汇总 ===", "wolf_turn")
+                        for wolf_id, target_id in wolf_choices.items():
+                            wolf_name = game_state.players[wolf_id]["name"]
+                            if target_id < game_state.env.N:
+                                target_name = game_state.players[target_id]["name"]
+                                broadcast_host_message(f"狼人 {wolf_name} 选择击杀 {target_name}", "wolf_turn")
+                            else:
+                                broadcast_host_message(f"狼人 {wolf_name} 选择不杀人", "wolf_turn")
+                        
+                        # 显示最终决策逻辑
+                        if len(wolf_targets) == 0:
+                            broadcast_host_message("所有狼人都选择不杀人，今晚无人死亡", "wolf_turn")
+                        elif len(set(wolf_targets)) == 1:
+                            # 所有狼人选择同一目标
+                            final_target = wolf_targets[0]
+                            target_name = game_state.players[final_target]["name"]
+                            broadcast_host_message(f"狼人团队一致选择击杀 {target_name}", "wolf_turn")
+                        else:
+                            # 狼人选择不同目标，需要随机决定
+                            from collections import Counter
+                            target_counts = Counter(wolf_targets)
+                            max_votes = max(target_counts.values())
+                            most_voted = [t for t, c in target_counts.items() if c == max_votes]
+                            
+                            if len(most_voted) == 1:
+                                final_target = most_voted[0]
+                                target_name = game_state.players[final_target]["name"]
+                                broadcast_host_message(f"根据投票结果，最终选择击杀 {target_name}", "wolf_turn")
+                            else:
+                                # 平票情况，随机选择
+                                import random
+                                final_target = random.choice(most_voted)
+                                target_name = game_state.players[final_target]["name"]
+                                candidates = [game_state.players[t]["name"] for t in most_voted]
+                                broadcast_host_message(f"狼人选择出现平票（{', '.join(candidates)}），随机决定击杀 {target_name}", "wolf_turn")
 
                     game_state.wolf_actions_collected = True
                     broadcast_host_message("狼人请闭眼", "wolf_turn")
@@ -400,20 +732,38 @@ def on_next_step():
             elif game_state.sub_step == 'seer_action' and not game_state.seer_actions_collected:
                 # 收集预言家行动
                 try:
+                    # 检查是否有人类预言家需要行动
+                    if (game_state.game_mode == 'human' and 
+                        game_state.human_handler and 
+                        game_state.env.alive[game_state.human_handler.human_player_id] and
+                        game_state.players[game_state.human_handler.human_player_id]["role"] == Role.SEER):
+                        # 人类预言家需要行动
+                        if game_state.human_handler.handle_night_phase_human():
+                            return  # 等待人类玩家操作
+                    
+                    # 处理AI玩家
                     for i in range(game_state.num_players):
                         if game_state.env.alive[i]:
                             player_info = game_state.players[i]
                             if player_info["role"] == Role.SEER:
+                                # 如果是人类玩家，跳过（已在上面处理）
+                                if (game_state.game_mode == 'human' and 
+                                    game_state.human_handler and 
+                                    i == game_state.human_handler.human_player_id):
+                                    continue
+                                    
                                 agent = game_state.env.agents[i]
                                 action = agent.act(game_state.env)
                                 game_state.night_actions[str(i)] = action
                                 
                                 action_val = int(action[0]) if isinstance(action, np.ndarray) else int(action)
-                                if action_val < game_state.env.N:
-                                    target_name = game_state.players[action_val]["name"]
-                                    broadcast_host_message(f"预言家 {player_info['name']} 选择查验 {target_name}", "seer_turn")
-                                else:
-                                    broadcast_host_message(f"预言家 {player_info['name']} 选择不查验", "seer_turn")
+                                # 在人机模式下，不显示AI预言家的具体行动
+                                if game_state.game_mode != 'human':
+                                    if action_val < game_state.env.N:
+                                        target_name = game_state.players[action_val]["name"]
+                                        broadcast_host_message(f"预言家 {player_info['name']} 选择查验 {target_name}", "seer_turn")
+                                    else:
+                                        broadcast_host_message(f"预言家 {player_info['name']} 选择不查验", "seer_turn")
                             elif player_info["role"] == Role.VILLAGER:
                                 # 村民无夜晚行动
                                 game_state.night_actions[str(i)] = game_state.env.N
@@ -463,7 +813,13 @@ def on_next_step():
                                         seer_name = game_state.players[seer_id]["name"]
                                         target_name = game_state.players[target_id]["name"]
                                         result = "狼人" if role_checked == Role.WOLF else "好人"
-                                        broadcast_host_message(f"预言家 {seer_name} 查验了 {target_name}，结果是{result}", "seer_turn")
+                                        
+                                        # 在人机模式下，只显示人类预言家的查验结果
+                                        if (game_state.game_mode != 'human' or 
+                                            (game_state.game_mode == 'human' and 
+                                             game_state.human_handler and 
+                                             seer_id == game_state.human_handler.human_player_id)):
+                                            broadcast_host_message(f"预言家 {seer_name} 查验了 {target_name}，结果是{result}", "seer_turn")
                                         
                                         # 立即为预言家更新信念
                                         seer_agent = game_state.env.agents[seer_id]
@@ -478,11 +834,12 @@ def on_next_step():
                                     print(f"[DEBUG] 发现夜晚死亡事件: victim_id={victim_id}")
                                     if victim_id is not None and victim_id >= 0:
                                         victim_name = game_state.players[victim_id]["name"]
-                                        broadcast_host_message(f"最终结果：{victim_name} 被狼人杀害", "night_end")
-                                        broadcast_death(victim_id)
+                                        victim_role = game_state.players[victim_id]["role"].name
+                                        broadcast_host_message(f"昨晚，{victim_name}（{victim_role}）被狼人杀害", "death_announce")
+                                        broadcast_death(victim_id, "night_kill")
                                         night_events.append(('night', None, None, victim_id, -1))
                                     elif victim_id == -1:
-                                        broadcast_host_message("狼人没有达成一致，今晚没有人死亡", "night_end")
+                                        broadcast_host_message("昨晚平安夜，没有人死亡", "night_result")
                     
                     # 处理预言家死亡逻辑
                     if night_events:
@@ -588,6 +945,19 @@ def on_next_step():
                     if game_state.is_game_over():
                         winner = game_state.get_winner()
                         broadcast_host_message(f"游戏结束！{winner}获胜！", "end")
+                        
+                        # 发送游戏结束事件
+                        if game_state.game_mode == 'human':
+                            # 人机模式：游戏结束时显示所有角色（解密阶段）
+                            roles_info = {pid: pinfo["role"].name for pid, pinfo in game_state.players.items()}
+                        else:
+                            # AI模式：正常显示
+                            roles_info = {pid: pinfo["role"].name for pid, pinfo in game_state.players.items()}
+                        
+                        emit('game_over', {
+                            "winner": winner,
+                            "roles": roles_info
+                        }, broadcast=True)
                         return
                     
                     # 重置夜晚状态，进入发言阶段
@@ -622,7 +992,15 @@ def on_next_step():
                 # 让当前玩家发言
                 broadcast_host_message(f"请 {current_player['name']} 发言", "talk")
                 
-                # 让 agent 自己处理发言逻辑
+                # 检查是否是人类玩家的回合
+                if (game_state.game_mode == 'human' and 
+                    game_state.human_handler and 
+                    game_state.current_speaker == game_state.human_handler.human_player_id):
+                    # 人类玩家发言
+                    if game_state.human_handler.handle_talk_phase_human():
+                        return  # 等待人类玩家操作
+                
+                # AI玩家发言
                 agent = game_state.env.agents[game_state.current_speaker]
                 action = agent.act(game_state.env)
                 
@@ -688,12 +1066,38 @@ def on_next_step():
         elif game_state.current_step == 'vote':
     # ---------- 投票阶段 ----------
             try:
+                # 检查是否有人类玩家需要投票
+                if (game_state.game_mode == 'human' and 
+                    game_state.human_handler and 
+                    game_state.env.alive[game_state.human_handler.human_player_id] and
+                    not game_state.human_vote_completed):
+                    # 人类玩家需要投票
+                    if game_state.human_handler.handle_vote_phase_human():
+                        return  # 等待人类玩家操作
+                
                 actions = {}
-                game_state.vote_results = {}          # ← 清空上一轮记录
+                # 只在没有投票记录时清空上一轮记录
+                if not game_state.vote_results:
+                    game_state.vote_results = {}
 
                 # 1) 收集动作 & 生成 vote_results
                 for i in range(game_state.num_players):
                     if game_state.env.alive[i]:
+                        # 如果已经有投票记录，跳过
+                        if i in game_state.vote_results:
+                            act_int = game_state.vote_results[i]
+                            actions[str(i)] = act_int
+                            continue
+                            
+                        # 如果是人类玩家且还没有投票，等待投票
+                        if (game_state.game_mode == 'human' and 
+                            game_state.human_handler and 
+                            i == game_state.human_handler.human_player_id):
+                            if game_state.human_handler.handle_vote_phase_human():
+                                return  # 等待人类玩家操作
+                            continue
+                            
+                        # AI玩家投票
                         agent   = game_state.env.agents[i]
                         action  = agent.act(game_state.env)                   # ndarray 或 int
                         act_int = int(action[0]) if isinstance(action, np.ndarray) else int(action)
@@ -731,7 +1135,7 @@ def on_next_step():
                         if isinstance(event, dict) and event.get("phase") == "vote":
                             victim_id = event.get("out")
                             if victim_id is not None and victim_id >= 0:
-                                broadcast_death(victim_id)
+                                broadcast_death(victim_id, "vote_out")
                             elif victim_id == -1:
                                 broadcast_host_message("平票，没有人被投死", "vote_result")
                 
@@ -742,6 +1146,19 @@ def on_next_step():
                 if game_state.is_game_over():
                     winner = game_state.get_winner()
                     broadcast_host_message(f"游戏结束！{winner}获胜！", "end")
+                    
+                    # 发送游戏结束事件
+                    if game_state.game_mode == 'human':
+                        # 人机模式：游戏结束时显示所有角色（解密阶段）
+                        roles_info = {pid: pinfo["role"].name for pid, pinfo in game_state.players.items()}
+                    else:
+                        # AI模式：正常显示
+                        roles_info = {pid: pinfo["role"].name for pid, pinfo in game_state.players.items()}
+                    
+                    emit('game_over', {
+                        "winner": winner,
+                        "roles": roles_info
+                    }, broadcast=True)
                     return
                 
                 # 进入下一天夜晚
