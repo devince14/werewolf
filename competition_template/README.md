@@ -12,7 +12,11 @@ This folder contains a minimal environment and baseline agent code for the "Biwe
 
 ## Creating a Custom Agent
 
+<!-- <<<<<<< fvt4qy-codex/提供狼人杀ai竞赛代码提交及测评方法 -->
 A custom agent must expose an `act(env)` method that receives a `WerewolfEnv` instance and returns a legal action for the current stage. You may reference `agents/belief_agent.py` as a starting point:
+=======
+A custom agent must expose an `act(env)` method that receives a `WerewolfEnv` instance and returns a legal action for the current stage. You may reference `agents_user/random_agent.py` as a starting point:
+<!-- >>>>>>> main -->
 
 ```python
 from competition_template.werewolf_env.werewolf_env import Role, WerewolfEnv
@@ -37,7 +41,11 @@ Place your agent file in `agents_user/` and ensure the class is importable. The 
 
 ## Running the Example Match
 
+<!-- <<<<<<< fvt4qy-codex/提供狼人杀ai竞赛代码提交及测评方法 -->
 A simple script to pit three baseline belief agents against each other:
+=======
+A simple script to pit three random agents against each other:
+<!-- >>>>>>> main -->
 
 ```bash
 python -m competition_template.demo
@@ -62,3 +70,7 @@ Each submission is evaluated in a clean environment by running the above evaluat
 ## Scoreboard and Rewards
 
 Results are stored in a MySQL database and presented on a web leaderboard. A sample Java program in `scoreboard/Scoreboard.java` demonstrates how scores can be queried via JDBC. Every two weeks the top three teams receive 500, 300 and 200 yuan respectively.
+<!-- <<<<<<< fvt4qy-codex/提供狼人杀ai竞赛代码提交及测评方法 -->
+=======
+
+<!-- >>>>>>> main -->
