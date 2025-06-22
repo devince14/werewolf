@@ -12,7 +12,7 @@ This folder contains a minimal environment and baseline agent code for the "Biwe
 
 ## Creating a Custom Agent
 
-A custom agent must expose an `act(env)` method that receives a `WerewolfEnv` instance and returns a legal action for the current stage. You may reference `agents_user/random_agent.py` as a starting point:
+A custom agent must expose an `act(env)` method that receives a `WerewolfEnv` instance and returns a legal action for the current stage. You may reference `agents/belief_agent.py` as a starting point:
 
 ```python
 from competition_template.werewolf_env.werewolf_env import Role, WerewolfEnv
@@ -37,7 +37,7 @@ Place your agent file in `agents_user/` and ensure the class is importable. The 
 
 ## Running the Example Match
 
-A simple script to pit three random agents against each other:
+A simple script to pit three baseline belief agents against each other:
 
 ```bash
 python -m competition_template.demo

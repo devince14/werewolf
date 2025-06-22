@@ -1,5 +1,5 @@
 from competition_template.werewolf_env.werewolf_env import WerewolfEnv, Role
-from competition_template.agents_user.random_agent import RandomAgent
+from competition_template.agents.belief_agent import BeliefAgent
 
 # roles: 1 wolf, 1 villager, 1 seer
 roles = [Role.WOLF, Role.VILLAGER, Role.SEER]
@@ -8,7 +8,7 @@ def main():
     env = WerewolfEnv(roles, talk_history_len=10, max_nights=3)
     agents = {}
     for i, r in enumerate(roles):
-        agents[str(i)] = RandomAgent(i, len(roles), r)
+        agents[str(i)] = BeliefAgent(i, len(roles), r)
         env.add_agent(agents[str(i)])
 
     obs, _ = env.reset()

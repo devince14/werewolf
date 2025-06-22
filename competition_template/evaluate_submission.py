@@ -3,7 +3,7 @@ import importlib
 import argparse
 from typing import Type
 from competition_template.werewolf_env.werewolf_env import WerewolfEnv, Role
-from competition_template.agents_user.random_agent import RandomAgent
+from competition_template.agents.belief_agent import BeliefAgent
 
 
 def load_agent(path: str) -> Type:
@@ -17,7 +17,7 @@ def evaluate(agent_cls: Type, n_games: int = 10) -> float:
     wins = 0
     for i in range(n_games):
         env = WerewolfEnv(roles, talk_history_len=10, max_nights=3)
-        agents = {str(j): RandomAgent(j, len(roles), r) for j, r in enumerate(roles)}
+        agents = {str(j): BeliefAgent(j, len(roles), r) for j, r in enumerate(roles)}
         # player 0 will be replaced by contestant's agent
         agents['0'] = agent_cls(0, len(roles), roles[0])
         for a in agents.values():
