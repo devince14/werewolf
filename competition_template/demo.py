@@ -1,3 +1,8 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+
 from competition_template.werewolf_env.werewolf_env import WerewolfEnv, Role
 # <<<<<<< fvt4qy-codex/提供狼人杀ai竞赛代码提交及测评方法
 from competition_template.agents.belief_agent import BeliefAgent
@@ -6,17 +11,14 @@ from competition_template.agents_user.random_agent import RandomAgent
 # >>>>>>> main
 
 # roles: 1 wolf, 1 villager, 1 seer
-roles = [Role.WOLF, Role.VILLAGER, Role.SEER]
+roles = [Role.WOLF, Role.VILLAGER,Role.VILLAGER,Role.VILLAGER, Role.SEER]
 
 def main():
     env = WerewolfEnv(roles, talk_history_len=10, max_nights=3)
     agents = {}
     for i, r in enumerate(roles):
-# <<<<<<< fvt4qy-codex/提供狼人杀ai竞赛代码提交及测评方法
         agents[str(i)] = BeliefAgent(i, len(roles), r)
-=======
         agents[str(i)] = RandomAgent(i, len(roles), r)
-# >>>>>>> main
         env.add_agent(agents[str(i)])
 
     obs, _ = env.reset()

@@ -1,8 +1,8 @@
 from abc import ABC
 from typing import Any, Dict
 import numpy as np
-from competition_template.werewolf_env import WerewolfEnv, Role
-from competition_template.agents.strategies import StrategyFactory
+from werewolf_env import WerewolfEnv, Role
+from agents.strategies import StrategyFactory
 
 class BaseAgent(ABC):
     """

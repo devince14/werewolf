@@ -7,6 +7,7 @@ class RandomAgent:
         self.agent_id = agent_id
         self.num_agents = num_agents
         self.role = role
+        self.has_claimed_seer = False  # 新增此行
 
     def act(self, env: WerewolfEnv):
         if env.stage == "talk":

@@ -28,7 +28,7 @@ class TalkType(IntEnum):
     SUPPORT    = 2
     CLAIM_SEER = 3  # 新增：声明自己是预言家
 
-ROLE_LIST = [Role.WOLF, Role.VILLAGER, Role.SEER]
+ROLE_LIST = [Role.WOLF, Role.VILLAGER, Role.VILLAGER, Role.VILLAGER, Role.SEER]
 
 class WerewolfEnv(ParallelEnv):
     metadata = {"name": "werewolf_simplified"}

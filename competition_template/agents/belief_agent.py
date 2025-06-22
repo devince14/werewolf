@@ -106,7 +106,7 @@ class BeliefAgent(BaseAgent):
 
     def _record_legacy(self, env, talk_type: int, target: int):
         """记录遗言事件"""
-        print(f"[DEBUG] _record_legacy被调用: agent_id={self.agent_id}, talk_type={talk_type}, target={target}")
+        # print(f"[DEBUG] _record_legacy被调用: agent_id={self.agent_id}, talk_type={talk_type}, target={target}")
         
         # 如果是真预言家且有验人结果，优先报告查验结果并亮身份
         if self.role == Role.SEER and hasattr(env, 'seer_records') and env.seer_records:
@@ -151,11 +151,15 @@ class BeliefAgent(BaseAgent):
                 "alive": [i for i,a in enumerate(env.alive) if a]
             })
         
-        print(f"[DEBUG] 遗言事件已添加到事件日志")
+        # print(f"[DEBUG] 遗言事件已添加到事件日志")
         
         # 立即更新所有玩家的信念
         for agent in env.agents:
+            # print(agent.agent_id)
             if hasattr(agent, 'strategies') and agent.strategies.get('belief_update'):
+                # 添加类型检查
+                if not isinstance(agent, BeliefAgent):  # 新增检查
+                    continue  # 跳过非BeliefAgent
                 # 获取最新添加的事件进行信念更新
                 recent_entries = env.public_log[-len([e for e in env.event_log if e.get('phase') == 'legacy' and e.get('speaker') == self.agent_id]):]
                 agent.strategies['belief_update'].execute(env, recent_entries)
@@ -171,10 +175,10 @@ class BeliefAgent(BaseAgent):
         # 检查是否是遗言阶段
         # 只有第一夜死亡的玩家才能留遗言
         is_first_night_legacy = (not env.alive[self.agent_id] and env.day == 1)
-        print(f"[DEBUG] 遗言检测: agent_id={self.agent_id}, alive={env.alive[self.agent_id]}, day={env.day}, is_legacy={is_first_night_legacy}")
+        # print(f"[DEBUG] 遗言检测: agent_id={self.agent_id}, alive={env.alive[self.agent_id]}, day={env.day}, is_legacy={is_first_night_legacy}")
                                    
         if is_first_night_legacy:
-            print(f"[DEBUG] 玩家 {self.agent_id} 进入遗言模式（第一夜死亡）")
+            # print(f"[DEBUG] 玩家 {self.agent_id} 进入遗言模式（第一夜死亡）")
             # 如果是遗言阶段，使用专门的遗言记录函数
             self._record_legacy(env, talk_type, target)
             return
@@ -343,19 +347,19 @@ class BeliefAgent(BaseAgent):
     def _get_wolf_teammates(self, env):
         """获取狼队友列表"""
         try:
-            print(f"[DEBUG] Getting wolf teammates for agent {self.agent_id}")
+            # print(f"[DEBUG] Getting wolf teammates for agent {self.agent_id}")
             
             # 检查必要的属性
             if not hasattr(env, 'roles'):
-                print("[DEBUG] env.roles does not exist")
+                # print("[DEBUG] env.roles does not exist")
                 return []
             
             if not hasattr(env, 'N'):
-                print("[DEBUG] env.N does not exist")
+                # print("[DEBUG] env.N does not exist")
                 return []
             
             if env.roles is None:
-                print("[DEBUG] env.roles is None")
+                # print("[DEBUG] env.roles is None")
                 return []
             
             # 获取狼队友列表
@@ -366,14 +370,14 @@ class BeliefAgent(BaseAgent):
                         env.roles[i] == Role.WOLF):
                         teammates.append(i)
                 except (IndexError, TypeError) as e:
-                    print(f"[DEBUG] Error checking player {i}: {str(e)}")
+                    # print(f"[DEBUG] Error checking player {i}: {str(e)}")
                     continue
                 
-            print(f"[DEBUG] Found wolf teammates: {teammates}")
+            # print(f"[DEBUG] Found wolf teammates: {teammates}")
             return teammates
         
         except Exception as e:
-            print(f"[DEBUG] Error in _get_wolf_teammates: {str(e)}")
+            # print(f"[DEBUG] Error in _get_wolf_teammates: {str(e)}")
             return []
 
     def fetch_new_events(self, env: WerewolfEnv) -> list:

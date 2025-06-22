@@ -56,7 +56,7 @@ class RoleSpecificBeliefUpdate(BeliefUpdateStrategy):
                         credibility = self.agent.belief.claimed_seers[speaker]
                         self.agent.belief.P_wolf[target] = max(0.0,
                             self.agent.belief.P_wolf[target] - self.seer_check_confidence * credibility)
-                        print(f"[DEBUG] Seer {speaker} checked {target} as VILLAGER, updating belief to {self.agent.belief.P_wolf[target]}")
+                        # print(f"[DEBUG] Seer {speaker} checked {target} as VILLAGER, updating belief to {self.agent.belief.P_wolf[target]}")
                     else:
                         # 普通的支持行为
                         self._handle_support(env, speaker, target)
@@ -176,7 +176,9 @@ class RoleSpecificBeliefUpdate(BeliefUpdateStrategy):
                 self.agent.belief.P_wolf[speaker] + self.contradiction_penalty)
                 
         # 预言家指控（包括验出狼人结果）
+        # print(self.agent.belief)
         if speaker in self.agent.belief.claimed_seers:
+            
             credibility = self.agent.belief.claimed_seers[speaker]
             # 如果指控目标是我自己
             if target == self.agent.agent_id and env.roles[self.agent.agent_id] != Role.WOLF:
@@ -196,11 +198,11 @@ class RoleSpecificBeliefUpdate(BeliefUpdateStrategy):
                     if role_int == Role.WOLF:  # 验出是狼人
                         self.agent.belief.P_wolf[target] = min(1.0,
                             self.agent.belief.P_wolf[target] + self.seer_check_confidence * credibility)
-                        print(f"[DEBUG] Seer {speaker} checked {target} as WOLF, updating belief to {self.agent.belief.P_wolf[target]}")
+                        # print(f"[DEBUG] Seer {speaker} checked {target} as WOLF, updating belief to {self.agent.belief.P_wolf[target]}")
                     else:  # 验出是好人
                         self.agent.belief.P_wolf[target] = max(0.0,
                             self.agent.belief.P_wolf[target] - self.seer_check_confidence * credibility)
-                        print(f"[DEBUG] Seer {speaker} checked {target} as VILLAGER, updating belief to {self.agent.belief.P_wolf[target]}")
+                        # print(f"[DEBUG] Seer {speaker} checked {target} as VILLAGER, updating belief to {self.agent.belief.P_wolf[target]}")
                 else:
                     # 普通指控
                     self._update_on_wolf_accuse(speaker, target)
