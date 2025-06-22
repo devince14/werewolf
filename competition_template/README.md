@@ -62,3 +62,4 @@ Each submission is evaluated in a clean environment by running the above evaluat
 ## Scoreboard and Rewards
 
 Results are stored in a MySQL database and presented on a web leaderboard. A sample Java program in `scoreboard/Scoreboard.java` demonstrates how scores can be queried via JDBC. Every two weeks the top three teams receive 500, 300 and 200 yuan respectively.
+
