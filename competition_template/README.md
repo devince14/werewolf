@@ -1,76 +1,101 @@
-# Werewolf AI Competition Template
+当然可以！下面是你提供的 Git patch 内容所代表的 **`competition_template/README.md` 文件的完整 Markdown 内容**：
 
-This folder contains a minimal environment and baseline agent code for the "Biweekly Cup" Werewolf AI contest. Contestants should implement their own agents in `agents_user/` and verify they run with the provided evaluation script.
+---
 
-## Installation
+````markdown
+# 狼人杀 AI “双周杯”比赛模板
 
-1. Use Python **3.10+**.
-2. Install dependencies:
+该目录提供了简化的狼人杀环境以及基线 `BeliefAgent`。选手需在 `agents_user/` 编写自己的智能体，并使用评测脚本验证。
+
+## 安装依赖
+
+1. 使用 **Python 3.10+**。
+2. 安装依赖包：
    ```bash
    pip install -r requirements.txt
-   ```
+````
 
-## Creating a Custom Agent
+## 编写自定义 Agent
 
-<!-- <<<<<<< fvt4qy-codex/提供狼人杀ai竞赛代码提交及测评方法 -->
-A custom agent must expose an `act(env)` method that receives a `WerewolfEnv` instance and returns a legal action for the current stage. You may reference `agents/belief_agent.py` as a starting point:
-=======
-A custom agent must expose an `act(env)` method that receives a `WerewolfEnv` instance and returns a legal action for the current stage. You may reference `agents_user/random_agent.py` as a starting point:
-<!-- >>>>>>> main -->
+Agent 类需要实现 `__init__(agent_id, num_agents, role)` 和 `act(env)` 两个接口。`act` 接收 `WerewolfEnv` 实例，根据当前阶段返回合法动作。示例代码如下：
 
 ```python
-from competition_template.werewolf_env.werewolf_env import Role, WerewolfEnv
+import numpy as np
+from competition_template.werewolf_env.werewolf_env import Role, WerewolfEnv, TalkType
 
 class MyAgent:
     def __init__(self, agent_id: int, num_agents: int, role: Role):
+        self.agent_id = agent_id
+        self.num_agents = num_agents
         self.role = role
 
     def act(self, env: WerewolfEnv):
         if env.stage == "talk":
-            # always claim good
-            return env.talk_space.sample()
+            # 不跳预言家，只声称好人
+            return np.array([0, TalkType.CLAIM_GOOD, env.N])
         if env.stage == "vote":
-            # vote for player 0 by default
+            # 默认投票给 0 号玩家
             return 0
         if env.stage == "night" and self.role == Role.SEER:
-            return 0  # check player 0
+            return 0  # 验证 0 号玩家
         return env.noop_space.sample()
 ```
 
-Place your agent file in `agents_user/` and ensure the class is importable. The evaluation script will instantiate your class by name.
+将文件放入 `agents_user/` 并确保类路径可导入，评测脚本会按类名实例化。
 
-## Running the Example Match
+## 输入与输出格式
 
-<!-- <<<<<<< fvt4qy-codex/提供狼人杀ai竞赛代码提交及测评方法 -->
-A simple script to pit three baseline belief agents against each other:
-=======
-A simple script to pit three random agents against each other:
-<!-- >>>>>>> main -->
+评测脚本会以如下方式创建你的 Agent：
+
+```python
+agent = MyAgent(agent_id, num_agents, role)
+```
+
+其中 `agent_id` 为自己的编号，`num_agents` 为游戏人数，`role` 为 `Role` 枚举。随后在每个回合调用 `act(env)` 获取动作。
+
+`act` 函数必须返回与当前阶段匹配的数据：
+
+* **talk 阶段**：返回 `numpy.array([claim_seer, talk_type, target])`
+
+  * `claim_seer`：`0` 表示不跳预言家，`1` 表示声明自己是预言家。
+  * `talk_type`：`TalkType.CLAIM_GOOD`(0) 声称好人；`TalkType.ACCUSE`(1) 指控某人是狼；`TalkType.SUPPORT`(2) 支持某人。
+  * `target`：目标玩家编号 `0..N-1`，或 `env.N` 表示无目标。
+* **vote 阶段**：返回整数 `0..N-1` 表示投票对象，`env.N` 为弃票。
+* **night 阶段**：
+
+  * 狼人返回击杀目标 `0..N-1`，`env.N` 表示放弃。
+  * 预言家返回查验目标 `0..N-1`，`env.N` 表示放弃。
+  * 村民夜间无动作，可返回 `0` 或 `env.noop_space.sample()`。
+
+确保返回值类型为 `int` 或 `numpy.ndarray`，并在合法范围内。
+
+## 运行示例
+
+执行下列命令可观看三名基线 `BeliefAgent` 的对局：
 
 ```bash
 python -m competition_template.demo
 ```
 
-The script runs one episode and prints the event log.
+脚本会运行一局并打印事件日志。
 
-## Submitting Your Agent
+## 提交与评测
 
-1. Fork this repository and create your agent under `competition_template/agents_user/`.
-2. Ensure it can be imported and runs with the evaluation script:
+1. Fork 本仓库或在比赛系统下载模板，在 `competition_template/agents_user/` 下创建你的 Agent 文件。
+2. 使用评测脚本本地验证：
+
    ```bash
-   python -m competition_template.evaluate_submission competition_template.agents_user.my_agent.MyAgent
+   python -m competition_template.evaluate_submission competition_template.agents_user.my_agent.MyAgent --games 10
    ```
-3. Tag your fork with a release or submit a pull request before the deadline. Only the latest commit before the cutoff will be evaluated.
+3. 在截止时间前提交 Pull Request 或上传压缩包，评测服务器会在干净环境中运行上述脚本统计狼方胜率。
 
-## Evaluation Environment
+## 排行榜与奖励
 
-The official server uses Python 3.10 with the packages listed in `requirements.txt`.
-Each submission is evaluated in a clean environment by running the above evaluation script for multiple games. Win rate as the wolf side is recorded as your score.
+评测结果会存入 MySQL 数据库并展示在网页排行榜。示例查询程序位于 `scoreboard/Scoreboard.java`。每两周根据最终排名奖励前三名：500 元、300 元、200 元。
 
-## Scoreboard and Rewards
+```
 
-Results are stored in a MySQL database and presented on a web leaderboard. A sample Java program in `scoreboard/Scoreboard.java` demonstrates how scores can be queried via JDBC. Every two weeks the top three teams receive 500, 300 and 200 yuan respectively.
-<!-- <<<<<<< fvt4qy-codex/提供狼人杀ai竞赛代码提交及测评方法 -->
-=======
+---
 
-<!-- >>>>>>> main -->
+你可以直接复制保存为 `competition_template/README.md` 或贴到任何支持 Markdown 的平台如 GitHub、Notion、Typora 等。如果还需要转成 HTML 或 PDF，我也可以帮你。
+```
