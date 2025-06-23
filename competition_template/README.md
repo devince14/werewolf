@@ -1,13 +1,22 @@
 
-````markdown
 # 多模态决策实验室-梁舒 狼人杀 AI “双周杯”比赛
 
 该目录提供了简化的狼人杀环境以及基线 `BeliefAgent`。选手需在 `agents_user/` 编写自己的智能体，并使用评测脚本验证。
+
+在当前版本v1.0中，我们提供了以下功能：
+
+1. 环境：提供了简化的狼人杀环境，包括角色分配、阶段切换、游戏结束判定等。
+2. 智能体：提供了一个基于信念的智能体 `BeliefAgent`，包含了验人、狼人和村民的策略。
+3. 评测脚本：包含了一个用于评估智能体性能的脚本 `evaluate_submission.py`。评测环境为：
+   * 10000 轮游戏，每轮最多 10 天。
+   * 每个智能体有 1 个预言家(SEER)，1 个狼人(WOLF)，3 个村民(VILLAGE)。选手需要为0号玩家设计策略,帮助狼人提高胜率!
+
 
 ## 安装依赖
 
 1. 使用 **Python 3.10+**。
 2. 安装依赖包：
+````markdown
    ```bash
    pip install -r requirements.txt
 ````
@@ -48,7 +57,7 @@ class MyAgent:
 agent = MyAgent(agent_id, num_agents, role)
 ```
 
-其中 `agent_id` 为自己的编号，`num_agents` 为游戏人数，`role` 为 `Role` 枚举。随后在每个回合调用 `act(env)` 获取动作。
+其中 `agent_id` 为智能体的编号(起始索引为0,默认值为0,表示)，`num_agents` 为游戏人数(默认值为5)，`role` 为 `Role` 枚举。随后在每个回合调用 `act(env)` 获取动作。
 
 `act` 函数必须返回与当前阶段匹配的数据：
 
@@ -88,11 +97,5 @@ python -m competition_template.demo
 
 ## 排行榜与奖励
 
-评测结果会存入 MySQL 数据库并展示在网页排行榜。示例查询程序位于 `scoreboard/Scoreboard.java`。每两周根据最终排名奖励前三名：500 元、300 元、200 元。
+评测结果会存入数据库并展示在网页排行榜。每两周根据最终排名奖励前三名：500 元、300 元、200 元。
 
-```
-
----
-
-你可以直接复制保存为 `competition_template/README.md` 或贴到任何支持 Markdown 的平台如 GitHub、Notion、Typora 等。如果还需要转成 HTML 或 PDF，我也可以帮你。
-```
