@@ -1,75 +1,173 @@
-# Werewolf AI Environment
+# 🚀 多模态决策实验室-梁舒 狼人杀 AI “双周杯”比赛
 
-This repository implements a simplified Werewolf (Mafia) environment and a set of agents for research and demo purposes.  All code lives inside the `werewolf_0613` folder.
+## 📋 系统概述
 
-## Game Environment
+这是一个类似LeetCode的狼人杀智能体比赛平台，支持：
+- 在线编写智能体代码
+- 实时评测和得分展示
+- 多用户隔离（每个提交使用唯一文件名）
+- 提交历史记录
 
-The environment is defined in [`werewolf_env/werewolf_env.py`](werewolf_0613/werewolf_env/werewolf_env.py).  It is built on top of **PettingZoo** and models a minimal version of the game with three roles:
+## ⚡ 快速启动
 
-- `WOLF`
-- `VILLAGER`
-- `SEER`
+### 1. 访问平台
+打开浏览器访问：http://139.196.178.56:5000/
 
-The game proceeds through three phases (`talk`, `vote`, `night`).  The environment exposes a parallel PettingZoo interface so multiple agents can act simultaneously.  Example episodes can be found in [`demos`](werewolf_0613/demos/).
+### 2. 注册账号
 
-## Agents
+- 点击"注册"按钮
+- 填写用户名、邮箱和密码
+- 完成注册后登录
 
-Agents are implemented in [`agents`](werewolf_0613/agents/).  `BaseAgent` provides a common interface and loads different strategy classes depending on the current phase.  `BeliefAgent` extends it with Bayesian belief updates over who might be a wolf or seer.
+## 🎯 使用流程
 
-## Training
+### 第一步：加载代码模板
+1. 打开网页后，点击"加载模板"按钮
+2. 系统会自动加载基础代码模板到编辑器中
 
-`train/train_villagers_vs_beliefwolves.py` contains a script that trains villagers (including the seer) with **PPO** from Stable-Baselines3 against fixed `BeliefAgent` wolves.  Run it with:
+### 第二步：编写智能体代码
+在代码编辑器中编写你的`UserAgent`类：
 
-```bash
-python werewolf_0613/train/train_villagers_vs_beliefwolves.py
+```python
+class UserAgent:
+    def __init__(self, agent_id: int, num_agents: int, role: Role):
+        self.agent_id = agent_id
+        self.num_agents = num_agents
+        self.role = role
+        
+    def act(self, env):
+        # 你的智能体逻辑
+        if env.stage == "talk":
+            return np.array([0, TalkType.CLAIM_GOOD, env.N])
+        elif env.stage == "vote":
+            return np.array([env.N])
+        elif env.stage == "night":
+            return np.array([env.N])
+        return np.array([env.N])
 ```
 
-Trained weights are saved to `ppo_villagers_vs_beliefwolves.zip`.
+### 第三步：提交评测
+1. 点击"提交评测"按钮
+2. 系统会运行10000场游戏进行评测
+3. 在右侧查看评测结果和得分
 
-## Web App
+## 📊 评测规则
 
-A simple web interface is provided in [`webapp`](werewolf_0613/webapp/).  It uses Flask and Socket.IO to display the game state and belief updates.  After installing the requirements, start the server with:
+- **游戏配置**：1狼人 + 3村民 + 1预言家，选手会随机分配到狼人、预言家或村民角色！需要在代码中实现三种角色的策略。
+- **评测场数**：10000场
+- **得分计算**：获胜的场次比例
+- **超时限制**：60秒
 
-```bash
-cd werewolf_0613/webapp
-pip install -r requirements.txt
-python app.py
+## 🎮 游戏阶段说明
+
+### 发言阶段 (`env.stage == "talk"`)
+```python
+return np.array([claim_seer, talk_type, target])
+# claim_seer: 0或1，是否声称预言家
+# talk_type: TalkType枚举值（CLAIM_GOOD, CLAIM_SEER, ACCUSE, SUPPORT）
+# target: 目标玩家编号
 ```
 
-The app will start on `http://localhost:5000/`.
-
-## Human vs AI Game
-
-The web interface also supports playing against the AI.  When starting a game
-you can pass the option `game_mode="human"` so one player is controlled by a
-person while all others remain AI agents.  The specific seat the human controls
-is chosen via `human_player_id` (player indices start at 0).  These parameters
-are part of the payload that the client sends with the `start_game` Socket.IO
-event.
-
-To try it out:
-
-1. Launch the server and open the site as shown above.
-2. Click **人机对战** on the landing page to open the setup dialog.
-3. Configure the number of players and select which position you will play via
-   the **人类玩家位置** dropdown.
-4. Press **创建并开始** to begin.  Whenever it is the human player's turn the
-   page will display a panel to choose night actions, make a statement or vote.
-
-The rest of the flow is identical to AI vs AI games but the interface will wait
-for your choices whenever the human controlled slot must act.
-
-## Python & Requirements
-
-The project requires **Python 3.10+**.  The main packages used by the web app are listed in `webapp/requirements.txt`:
-
-```
-flask==3.0.0
-flask-socketio==5.3.6
-numpy==1.24.3
-pettingzoo==1.24.1
-gymnasium==0.29.1
-python-dotenv==1.0.0
+### 投票阶段 (`env.stage == "vote"`)
+```python
+return np.array([target])
+# target: 要投票的玩家编号
 ```
 
-Stable-Baselines3 is needed for running the training script.
+### 夜晚阶段 (`env.stage == "night"`)
+```python
+return np.array([target])
+# target: 目标玩家编号
+# - 预言家：查验目标
+# - 狼人：杀死目标
+# - 村民：无行动
+```
+
+## 🔧 开发技巧
+
+### 1. 获取游戏信息
+```python
+def act(self, env):
+    # 获取存活玩家
+    alive_players = [i for i in range(env.N) if env.alive[i]]
+    
+    # 获取事件日志
+    for event in env.event_log:
+        if isinstance(event, dict):
+            phase = event.get("phase")
+            speaker = event.get("speaker")
+            # 处理事件...
+    
+    # 获取当前阶段
+    stage = env.stage
+    
+    # 获取当前天数
+    day = env.day
+```
+
+### 2. 角色判断
+```python
+if self.role == Role.SEER:
+    # 预言家逻辑
+elif self.role == Role.WOLF:
+    # 狼人逻辑
+else:
+    # 村民逻辑
+```
+
+### 3. 随机策略示例
+```python
+import random
+
+def act(self, env):
+    alive_players = [i for i in range(env.N) if env.alive[i] and i != self.agent_id]
+    
+    if env.stage == "talk":
+        claim_seer = random.choice([0, 1])
+        talk_type = random.choice([TalkType.CLAIM_GOOD, TalkType.ACCUSE, TalkType.SUPPORT])
+        target = random.choice(alive_players) if alive_players else env.N
+        return np.array([claim_seer, talk_type, target])
+    
+    elif env.stage == "vote":
+        target = random.choice(alive_players) if alive_players else env.N
+        return np.array([target])
+    
+    elif env.stage == "night":
+        if self.role in [Role.SEER, Role.WOLF]:
+            target = random.choice(alive_players) if alive_players else env.N
+        else:
+            target = env.N
+        return np.array([target])
+```
+
+## 🐛 常见问题
+
+### Q: 代码提交后没有结果？
+A: 检查代码语法是否正确，确保类名为`UserAgent`
+
+### Q: 评测超时？
+A: 检查代码是否有无限循环，确保`act`方法能正常返回
+
+### Q: 导入错误？
+A: 确保使用了正确的导入路径，参考模板代码
+
+### Q: 得分很低？
+A: 这是正常的，狼人杀是一个复杂的博弈游戏，需要精心设计策略
+
+## 📚 进阶资源
+
+- 查看 `example_agent.py` 获取更多示例
+- 阅读 `README_比赛平台.md` 了解详细文档
+- 运行 `test_system.py` 检查系统状态
+
+## 🎉 开始你的狼人杀之旅！
+
+现在你已经了解了基本用法，开始编写你的智能体代码吧！记住：
+- 多尝试不同的策略
+- 分析游戏日志了解失败原因
+- 参考其他优秀代码
+- 享受编程和博弈的乐趣！
+
+---
+
+**提示**：使用 `Ctrl+Enter` 快捷键可以快速提交代码！ 
