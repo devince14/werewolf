@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Tuple
-from competition_template.werewolf_env import WerewolfEnv
+from werewolf_env import WerewolfEnv
 
 class Strategy(ABC):
     """策略接口基类"""

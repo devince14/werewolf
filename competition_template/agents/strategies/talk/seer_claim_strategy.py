@@ -1,5 +1,5 @@
 from typing import Tuple
-from competition_template.werewolf_env import WerewolfEnv, TalkType, Role
+from werewolf_env import WerewolfEnv, TalkType, Role
 from ..base.base_strategy import TalkStrategy
 import numpy as np
 

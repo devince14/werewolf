@@ -1,5 +1,5 @@
 import numpy as np
-from competition_template.werewolf_env import Role
+from werewolf_env import Role
 
 class BeliefState:
     """

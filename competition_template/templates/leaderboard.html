@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排行榜 - 狼人杀智能体比赛平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header-left p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .leaderboard-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .leaderboard-header h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .leaderboard-header p {
+            color: #6c757d;
+            font-size: 1.1em;
+        }
+
+        .leaderboard-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 80px 2fr 1fr 1fr 1fr 1fr 1fr;
+            gap: 15px;
+            font-weight: 500;
+        }
+
+        .table-row {
+            padding: 15px 20px;
+            display: grid;
+            grid-template-columns: 80px 2fr 1fr 1fr 1fr 1fr 1fr;
+            gap: 15px;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.3s ease;
+        }
+
+        .table-row:hover {
+            background: #f8f9fa;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .rank {
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .rank-1 {
+            color: #ffd700;
+        }
+
+        .rank-2 {
+            color: #c0c0c0;
+        }
+
+        .rank-3 {
+            color: #cd7f32;
+        }
+
+        .username {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .rate {
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .rate.overall {
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .rate.villager {
+            color: #28a745;
+        }
+
+        .rate.wolf {
+            color: #dc3545;
+        }
+
+        .rate.seer {
+            color: #ffc107;
+        }
+
+        .date {
+            color: #6c757d;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .table-header, .table-row {
+                grid-template-columns: 60px 1fr 1fr;
+                gap: 10px;
+            }
+
+            .table-header .villager, .table-header .wolf, .table-header .seer, .table-header .date,
+            .table-row .villager, .table-row .wolf, .table-row .seer, .table-row .date {
+                display: none;
+            }
+
+            .stats-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>排行榜</h1>
+                    <p>查看所有玩家的最佳成绩</p>
+                </div>
+                <div class="nav-menu">
+                    <a href="{{ url_for('index') }}" class="nav-link">首页</a>
+                    <a href="{{ url_for('leaderboard') }}" class="nav-link active">排行榜</a>
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('profile') }}" class="nav-link">个人资料</a>
+                        <a href="{{ url_for('logout') }}" class="nav-link">登出</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="nav-link">登录</a>
+                        <a href="{{ url_for('register') }}" class="nav-link">注册</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="leaderboard-header">
+                <h2>🏆 排行榜</h2>
+                <p>基于总体胜率排序，展示所有玩家的最佳成绩</p>
+            </div>
+
+            {% if scores %}
+                <div class="stats-summary">
+                    <div class="stat-card">
+                        <div class="stat-value">{{ scores|length }}</div>
+                        <div class="stat-label">参与玩家</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ "%.1f"|format(scores[0].overall_win_rate * 100) }}%</div>
+                        <div class="stat-label">最高胜率</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ "%.1f"|format((scores|sum(attribute='overall_win_rate') / scores|length) * 100) }}%</div>
+                        <div class="stat-label">平均胜率</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">{{ scores[-1].created_at.strftime('%m-%d') }}</div>
+                        <div class="stat-label">最新更新</div>
+                    </div>
+                </div>
+
+                <div class="leaderboard-table">
+                    <div class="table-header">
+                        <div>排名</div>
+                        <div>用户名</div>
+                        <div>总体胜率</div>
+                        <div>村民胜率</div>
+                        <div>狼人胜率</div>
+                        <div>预言家胜率</div>
+                        <div>更新时间</div>
+                    </div>
+                    
+                    {% for score in scores %}
+                        <div class="table-row">
+                            <div class="rank {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% endif %}">
+                                {% if loop.index == 1 %}🥇
+                                {% elif loop.index == 2 %}🥈
+                                {% elif loop.index == 3 %}🥉
+                                {% else %}{{ loop.index }}
+                                {% endif %}
+                            </div>
+                            <div class="username">{{ score.username }}</div>
+                            <div class="rate overall">{{ "%.2f"|format(score.overall_win_rate * 100) }}%</div>
+                            <div class="rate villager">{{ "%.2f"|format(score.villager_win_rate * 100) }}%</div>
+                            <div class="rate wolf">{{ "%.2f"|format(score.wolf_win_rate * 100) }}%</div>
+                            <div class="rate seer">{{ "%.2f"|format(score.seer_win_rate * 100) }}%</div>
+                            <div class="date">{{ score.created_at.strftime('%m-%d %H:%M') }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <h3>暂无排行榜数据</h3>
+                    <p>还没有玩家提交代码，成为第一个参与者吧！</p>
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('index') }}" class="btn btn-primary">开始编程</a>
+                    {% else %}
+                        <a href="{{ url_for('register') }}" class="btn btn-primary">立即注册</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

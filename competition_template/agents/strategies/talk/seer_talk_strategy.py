@@ -1,5 +1,5 @@
-from competition_template.werewolf_env import WerewolfEnv, TalkType, Role
-from competition_template.agents.strategies.base.base_strategy import TalkStrategy
+from werewolf_env import WerewolfEnv, TalkType, Role
+from agents.strategies.base.base_strategy import TalkStrategy
 import numpy as np
 
 class SeerTalkStrategy(TalkStrategy):
@@ -17,7 +17,7 @@ class SeerTalkStrategy(TalkStrategy):
             # 第一天特殊处理
             if env.day == 1:  # 第一天是day=1
                 # 检查是否有人跳预言家
-                has_other_seer = any(agent.has_claimed_seer for i, agent in enumerate(env.agents) if i != my)
+                has_other_seer = any(getattr(agent, 'has_claimed_seer', False) for i, agent in enumerate(env.agents) if i != my)
                 # 检查第一晚验人结果
                 found_wolf = (env.seer_records and 
                             len(env.seer_records) > 0 and 

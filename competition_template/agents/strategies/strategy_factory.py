@@ -1,10 +1,10 @@
-from competition_template.werewolf_env import Role
-from competition_template.agents.strategies.talk.seer_talk_strategy import SeerTalkStrategy
-from competition_template.agents.strategies.talk.wolf_talk_strategy import WolfTalkStrategy
-from competition_template.agents.strategies.talk.villager_talk_strategy import VillagerTalkStrategy
-from competition_template.agents.strategies.vote.belief_based_vote import BeliefBasedVoteStrategy
-from competition_template.agents.strategies.night.wolf_kill_strategy import WolfKillStrategy
-from competition_template.agents.strategies.night.seer_check_strategy import SeerCheckStrategy
+from werewolf_env import Role
+from agents.strategies.talk.seer_talk_strategy import SeerTalkStrategy
+from agents.strategies.talk.wolf_talk_strategy import WolfTalkStrategy
+from agents.strategies.talk.villager_talk_strategy import VillagerTalkStrategy
+from agents.strategies.vote.belief_based_vote import BeliefBasedVoteStrategy
+from agents.strategies.night.wolf_kill_strategy import WolfKillStrategy
+from agents.strategies.night.seer_check_strategy import SeerCheckStrategy
 from .belief.role_specific_belief_update import RoleSpecificBeliefUpdate
 
 class StrategyFactory:

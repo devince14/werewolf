@@ -1,5 +1,5 @@
-from competition_template.werewolf_env import WerewolfEnv, TalkType, Role
-from competition_template.agents.strategies.base.base_strategy import BeliefUpdateStrategy, VoteStrategy
+from werewolf_env import WerewolfEnv, TalkType, Role
+from agents.strategies.base.base_strategy import BeliefUpdateStrategy, VoteStrategy
 import numpy as np
 
 class RoleSpecificBeliefUpdate(BeliefUpdateStrategy):
@@ -32,7 +32,8 @@ class RoleSpecificBeliefUpdate(BeliefUpdateStrategy):
                 phase, speaker, talk_type, target, role_int = event
                 if phase == 'night' and target >= 0:  # 有人死亡
                     # 检查死者是否是预言家
-                    if target in self.agent.belief.claimed_seers:
+                    claimed_seers = getattr(self.agent.belief, 'claimed_seers', {})
+                    if target in claimed_seers:
                         self._handle_seer_death(env)
                         break  # 找到死亡的预言家就可以停止检查
 
@@ -51,9 +52,10 @@ class RoleSpecificBeliefUpdate(BeliefUpdateStrategy):
 
                 # 更新支持关系（包括验出好人的结果）
                 elif talk_type == TalkType.SUPPORT:
-                    if speaker in self.agent.belief.claimed_seers and role_int == Role.VILLAGER:
+                    claimed_seers = getattr(self.agent.belief, 'claimed_seers', {})
+                    if speaker in claimed_seers and role_int == Role.VILLAGER:
                         # 预言家验出好人的情况
-                        credibility = self.agent.belief.claimed_seers[speaker]
+                        credibility = claimed_seers[speaker]
                         self.agent.belief.P_wolf[target] = max(0.0,
                             self.agent.belief.P_wolf[target] - self.seer_check_confidence * credibility)
                         # print(f"[DEBUG] Seer {speaker} checked {target} as VILLAGER, updating belief to {self.agent.belief.P_wolf[target]}")
@@ -71,13 +73,14 @@ class RoleSpecificBeliefUpdate(BeliefUpdateStrategy):
     def _handle_seer_death(self, env: WerewolfEnv):
         """处理预言家死亡的情况"""
         # 获取所有声称是预言家的玩家
-        claimed_seers = list(self.agent.belief.claimed_seers.keys())
-        if len(claimed_seers) >= 2:  # 如果有两个或以上的预言家
+        claimed_seers = getattr(self.agent.belief, 'claimed_seers', {})
+        claimed_seers_list = list(claimed_seers.keys())
+        if len(claimed_seers_list) >= 2:  # 如果有两个或以上的预言家
             # 检查是否有预言家在夜里死亡
-            for seer in claimed_seers:
+            for seer in claimed_seers_list:
                 if not env.alive[seer]:  # 如果这个预言家死了
                     # 增加其他声称预言家的狼人概率
-                    for other_seer in claimed_seers:
+                    for other_seer in claimed_seers_list:
                         if env.alive[other_seer] and other_seer != seer:  # 对其他还活着的预言家
                             old_prob = self.agent.belief.P_wolf[other_seer]
                             # 大幅增加狼人概率
@@ -91,17 +94,18 @@ class RoleSpecificBeliefUpdate(BeliefUpdateStrategy):
 
     def _handle_seer_claim(self, env: WerewolfEnv, speaker: int):
         """处理预言家声称"""
-        self.agent.belief.claimed_seers[speaker] = 0.5
+        claimed_seers = getattr(self.agent.belief, 'claimed_seers', {})
+        claimed_seers[speaker] = 0.5
         
         # 如果我是真预言家，且有人冒充，极大提高对其狼人嫌疑
         if env.roles[self.agent.agent_id] == Role.SEER and speaker != self.agent.agent_id:
             self.agent.belief.P_wolf[speaker] = min(1.0, self.agent.belief.P_wolf[speaker] + self.fake_seer_penalty)
-            self.agent.belief.claimed_seers[speaker] = 0.0
+            claimed_seers[speaker] = 0.0
             
         # 如果我是狼人，知道队友的真实身份
         elif env.roles[self.agent.agent_id] == Role.WOLF:
             if speaker in self.agent._get_wolf_teammates(env):
-                self.agent.belief.claimed_seers[speaker] = 0.0
+                claimed_seers[speaker] = 0.0
                 
     def _check_contradiction(self, env: WerewolfEnv, speaker: int, target: int, action_type: TalkType):
         """检查行为是否与历史矛盾"""
@@ -155,17 +159,18 @@ class RoleSpecificBeliefUpdate(BeliefUpdateStrategy):
         self.agent.belief.supported_by[target_id].add(supporter_id)
         
         # 如果支持者是预言家，增加被支持者的可信度
-        if supporter_id in self.agent.belief.claimed_seers:
-            credibility = self.agent.belief.claimed_seers[supporter_id]
+        claimed_seers = getattr(self.agent.belief, 'claimed_seers', {})
+        if supporter_id in claimed_seers:
+            credibility = claimed_seers[supporter_id]
             self.agent.belief.P_wolf[target_id] = max(0.0, 
                 self.agent.belief.P_wolf[target_id] - self.trust_gain * credibility)
             
         # 如果被支持者是我自己
         if target_id == self.agent.agent_id:
-            if supporter_id in self.agent.belief.claimed_seers:
+            if supporter_id in claimed_seers:
                 # 如果支持我的人是预言家，增加其可信度
-                self.agent.belief.claimed_seers[supporter_id] = min(1.0,
-                    self.agent.belief.claimed_seers[supporter_id] + self.trust_gain)
+                claimed_seers[supporter_id] = min(1.0,
+                    claimed_seers[supporter_id] + self.trust_gain)
                     
     def _handle_accuse(self, env: WerewolfEnv, speaker: int, target: int, role_int: int):
         """处理指控和预言家验人结果"""
@@ -177,18 +182,19 @@ class RoleSpecificBeliefUpdate(BeliefUpdateStrategy):
                 
         # 预言家指控（包括验出狼人结果）
         # print(self.agent.belief)
-        if speaker in self.agent.belief.claimed_seers:
+        claimed_seers = getattr(self.agent.belief, 'claimed_seers', {})
+        if speaker in claimed_seers:
             
-            credibility = self.agent.belief.claimed_seers[speaker]
+            credibility = claimed_seers[speaker]
             # 如果指控目标是我自己
             if target == self.agent.agent_id and env.roles[self.agent.agent_id] != Role.WOLF:
-                self._handle_accuse_me(speaker, speaker in self.agent.belief.claimed_seers)
-                self.agent.belief.claimed_seers[speaker] = 0.0
+                self._handle_accuse_me(speaker, speaker in claimed_seers)
+                claimed_seers[speaker] = 0.0
             # 如果我是真预言家，且说话的不是我
             elif env.roles[self.agent.agent_id] == Role.SEER and speaker != self.agent.agent_id:
                 # 降低这个预言家的可信度，验人结果的惩罚更重
                 penalty = self.fake_seer_penalty if role_int == Role.WOLF else self.normal_accuse_penalty
-                self.agent.belief.claimed_seers[speaker] = 0.0
+                claimed_seers[speaker] = 0.0
                 # 不更新对目标的狼人概率
             else:
                 # 其他人正常更新信念
@@ -210,7 +216,7 @@ class RoleSpecificBeliefUpdate(BeliefUpdateStrategy):
         else:
             # 如果指控目标是我自己
             if target == self.agent.agent_id and env.roles[self.agent.agent_id] != Role.WOLF:
-                self._handle_accuse_me(speaker, speaker in self.agent.belief.claimed_seers)
+                self._handle_accuse_me(speaker, speaker in claimed_seers)
             else:
                 # 普通玩家的指控
                 self._update_on_wolf_accuse(speaker, target)

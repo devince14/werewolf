@@ -5,10 +5,10 @@
 
 import random
 import numpy as np
-from competition_template.werewolf_env import Role, TalkType, WerewolfEnv
-from competition_template.agents.base_agent import BaseAgent
-from competition_template.agents.belief.belief_state import BeliefState
-from competition_template.agents.strategies.talk.seer_talk_strategy import SeerTalkStrategy
+from werewolf_env import Role, TalkType, WerewolfEnv
+from agents.base_agent import BaseAgent
+from agents.belief.belief_state import BeliefState
+from agents.strategies.talk.seer_talk_strategy import SeerTalkStrategy
 
 PHASE_TALK = 0
 PHASE_LEGACY = 1

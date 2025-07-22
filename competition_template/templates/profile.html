@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人资料 - 狼人杀智能体比赛平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header-left p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .profile-section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .user-info h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .best-score {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .best-score h3 {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .score-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .score-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .scores-section, .submissions-section {
+            margin-bottom: 40px;
+        }
+
+        .score-card, .submission-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .score-header, .submission-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .score-date, .submission-date {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .score-rates {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .rate-item {
+            text-align: center;
+        }
+
+        .rate-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .rate-label {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        .submission-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .models-section {
+            margin-bottom: 40px;
+        }
+
+        .model-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .model-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .model-item {
+            text-align: center;
+        }
+
+        .model-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .model-label {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        .upload-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .upload-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .file-upload {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            border-color: #764ba2;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-upload label {
+            cursor: pointer;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .file-upload label:hover {
+            color: #764ba2;
+        }
+
+        .upload-info {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 10px;
+        }
+
+        .status-message {
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>个人资料</h1>
+                    <p>查看你的比赛记录和成绩</p>
+                </div>
+                <div class="nav-menu">
+                    <a href="{{ url_for('index') }}" class="nav-link">首页</a>
+                    <a href="{{ url_for('leaderboard') }}" class="nav-link">排行榜</a>
+                    <a href="{{ url_for('profile') }}" class="nav-link active">个人资料</a>
+                    <a href="{{ url_for('logout') }}" class="nav-link">登出</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="profile-section">
+                <div class="user-info">
+                    <h3>用户信息</h3>
+                    <div class="info-item">
+                        <div class="info-label">用户名</div>
+                        <div class="info-value">{{ user.username }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">邮箱</div>
+                        <div class="info-value">{{ user.email }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">注册时间</div>
+                        <div class="info-value">{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">最后登录</div>
+                        <div class="info-value">
+                            {% if user.last_login %}
+                                {{ user.last_login.strftime('%Y-%m-%d %H:%M') }}
+                            {% else %}
+                                从未登录
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="best-score">
+                    <h3>最佳成绩</h3>
+                    {% if best_score %}
+                        <div class="score-grid">
+                            <div class="score-item">
+                                <div class="score-value">{{ best_score.formatted_overall_rate }}</div>
+                                <div class="score-label">总体胜率</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">{{ best_score.formatted_villager_rate }}</div>
+                                <div class="score-label">村民胜率</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">{{ best_score.formatted_wolf_rate }}</div>
+                                <div class="score-label">狼人胜率</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">{{ best_score.formatted_seer_rate }}</div>
+                                <div class="score-label">预言家胜率</div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>暂无成绩记录</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="scores-section">
+                <h2 class="section-title">成绩记录</h2>
+                {% if scores %}
+                    {% for score in scores %}
+                        <div class="score-card">
+                            <div class="score-header">
+                                <div class="score-date">{{ score.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                                <div class="score-overall">总体胜率: {{ score.formatted_overall_rate }}</div>
+                            </div>
+                            <div class="score-rates">
+                                <div class="rate-item">
+                                    <div class="rate-value">{{ score.formatted_villager_rate }}</div>
+                                    <div class="rate-label">村民胜率</div>
+                                </div>
+                                <div class="rate-item">
+                                    <div class="rate-value">{{ score.formatted_wolf_rate }}</div>
+                                    <div class="rate-label">狼人胜率</div>
+                                </div>
+                                <div class="rate-item">
+                                    <div class="rate-value">{{ score.formatted_seer_rate }}</div>
+                                    <div class="rate-label">预言家胜率</div>
+                                </div>
+                                <div class="rate-item">
+                                    <div class="rate-value">{{ score.total_games }}</div>
+                                    <div class="rate-label">总游戏数</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <h3>暂无成绩记录</h3>
+                        <p>提交你的第一个智能体代码来获得成绩！</p>
+                        <a href="{{ url_for('index') }}" class="btn btn-primary">开始编程</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="submissions-section">
+                <h2 class="section-title">代码提交记录</h2>
+                {% if submissions %}
+                    {% for submission in submissions %}
+                        <div class="submission-card">
+                            <div class="submission-header">
+                                <div class="submission-date">{{ submission.submitted_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                                <div class="submission-actions">
+                                    <button class="btn btn-secondary" onclick="viewCode({{ submission.id }})">查看代码</button>
+                                </div>
+                            </div>
+                            <div class="submission-info">
+                                <strong>文件名:</strong> {{ submission.filename }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <h3>暂无提交记录</h3>
+                        <p>提交你的第一个智能体代码！</p>
+                        <a href="{{ url_for('index') }}" class="btn btn-primary">开始编程</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="models-section">
+                <h2 class="section-title">模型管理</h2>
+                
+                <div class="upload-section">
+                    <h3>上传模型文件</h3>
+                    <div class="file-upload" onclick="document.getElementById('model-file').click()">
+                        <input type="file" id="model-file" accept=".pkl,.pth,.h5,.pt,.model,.weights" onchange="uploadModel(this)">
+                        <label for="model-file">
+                            <div style="font-size: 2em; margin-bottom: 10px;">📁</div>
+                            <div>点击选择模型文件</div>
+                        </label>
+                        <div class="upload-info">
+                            支持格式: .pkl, .pth, .h5, .pt, .model, .weights<br>
+                            文件大小限制: 50MB
+                        </div>
+                    </div>
+                    <div id="upload-status"></div>
+                </div>
+
+                <div id="models-list">
+                    <div class="empty-state">
+                        <h3>暂无模型文件</h3>
+                        <p>上传你的第一个强化学习模型！</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+
+    <script>
+        function viewCode(submissionId) {
+            fetch(`/get_user_code/${submissionId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code) {
+                        // 创建一个新窗口显示代码
+                        const newWindow = window.open('', '_blank');
+                        newWindow.document.write(`
+                            <html>
+                                <head>
+                                    <title>代码查看</title>
+                                    <style>
+                                        body { font-family: monospace; padding: 20px; background: #f8f9fa; }
+                                        pre { background: white; padding: 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                                    </style>
+                                </head>
+                                <body>
+                                    <h2>提交的代码</h2>
+                                    <pre><code>${data.code}</code></pre>
+                                </body>
+                            </html>
+                        `);
+                    } else {
+                        alert('无法获取代码');
+                    }
+                })
+                .catch(error => {
+                    console.error('获取代码失败:', error);
+                    alert('获取代码失败');
+                });
+        }
+
+        // 页面加载时获取模型列表
+        document.addEventListener('DOMContentLoaded', function() {
+            loadModels();
+        });
+
+        function uploadModel(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // 检查文件大小
+            if (file.size > 50 * 1024 * 1024) {
+                showUploadStatus('文件大小超过50MB限制', 'error');
+                return;
+            }
+
+            // 检查文件类型
+            const allowedExtensions = ['.pkl', '.pth', '.h5', '.pt', '.model', '.weights'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            if (!allowedExtensions.includes(fileExtension)) {
+                showUploadStatus(`不支持的文件类型: ${fileExtension}`, 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('model_file', file);
+
+            showUploadStatus('正在上传...', 'info');
+
+            fetch('/upload_model', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showUploadStatus('模型文件上传成功！', 'success');
+                    loadModels(); // 重新加载模型列表
+                    input.value = ''; // 清空文件选择
+                } else {
+                    showUploadStatus(data.error || '上传失败', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('上传失败:', error);
+                showUploadStatus('网络错误，请重试', 'error');
+            });
+        }
+
+        function showUploadStatus(message, type) {
+            const statusDiv = document.getElementById('upload-status');
+            statusDiv.innerHTML = `<div class="status-message ${type}">${message}</div>`;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        function loadModels() {
+            fetch('/list_models')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayModels(data.models);
+                    } else {
+                        console.error('获取模型列表失败:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('获取模型列表失败:', error);
+                });
+        }
+
+        function displayModels(models) {
+            const modelsList = document.getElementById('models-list');
+            
+            if (models.length === 0) {
+                modelsList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>暂无模型文件</h3>
+                        <p>上传你的第一个强化学习模型！</p>
+                    </div>
+                `;
+                return;
+            }
+
+            modelsList.innerHTML = models.map(model => `
+                <div class="model-card">
+                    <div class="model-header">
+                        <div class="model-date">${new Date(model.uploaded_at).toLocaleString()}</div>
+                        <div class="submission-actions">
+                            <button class="btn btn-secondary" onclick="deleteModel(${model.id})">删除</button>
+                        </div>
+                    </div>
+                    <div class="model-info">
+                        <div class="model-item">
+                            <div class="model-value">${model.original_filename}</div>
+                            <div class="model-label">原始文件名</div>
+                        </div>
+                        <div class="model-item">
+                            <div class="model-value">${formatFileSize(model.file_size)}</div>
+                            <div class="model-label">文件大小</div>
+                        </div>
+                        <div class="model-item">
+                            <div class="model-value">${model.file_type}</div>
+                            <div class="model-label">文件类型</div>
+                        </div>
+                    </div>
+                    <div class="model-status">
+                        <strong>状态:</strong> ${model.exists ? '✅ 文件存在' : '❌ 文件丢失'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteModel(modelId) {
+            if (!confirm('确定要删除这个模型文件吗？')) {
+                return;
+            }
+
+            fetch(`/delete_model/${modelId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadModels(); // 重新加载模型列表
+                } else {
+                    alert(data.error || '删除失败');
+                }
+            })
+            .catch(error => {
+                console.error('删除失败:', error);
+                alert('删除失败');
+            });
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>

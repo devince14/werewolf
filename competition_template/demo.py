@@ -3,11 +3,11 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
-from competition_template.werewolf_env.werewolf_env import WerewolfEnv, Role
+from werewolf_env.werewolf_env import WerewolfEnv, Role
 # <<<<<<< fvt4qy-codex/提供狼人杀ai竞赛代码提交及测评方法
-from competition_template.agents.belief_agent import BeliefAgent
+from agents.belief_agent import BeliefAgent
 # =======
-from competition_template.agents_user.random_agent import RandomAgent
+from agents_user.random_agent import RandomAgent
 # >>>>>>> main
 
 # roles: 1 wolf, 1 villager, 1 seer

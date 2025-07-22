@@ -1,4 +1,4 @@
-from competition_template.werewolf_env import WerewolfEnv, Role
+from werewolf_env import WerewolfEnv, Role
 from ..base.base_strategy import NightStrategy
 import numpy as np
 import random
